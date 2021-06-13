@@ -1,0 +1,27 @@
+{
+  "name": "juleshwar.dev",
+  "version": "1.0.0",
+  "description": "My portfolio page",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juleshwar/juleshwar.dev.git"
+  },
+  "keywords": [
+    "portfolio"
+  ],
+  "author": "juleshwar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juleshwar/juleshwar.dev/issues"
+  },
+  "homepage": "https://github.com/juleshwar/juleshwar.dev#readme",
+  "devDependencies": {
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.2"
+  }
+}
