@@ -1,14 +1,15 @@
 {
-  "name": "nextjs-notion-starter-kit",
-  "version": "0.1.0",
+  "name": "juleshwar.dev",
+  "version": "1.0.0",
   "private": true,
-  "description": "The perfect starter kit for building beautiful websites with Next.js and Notion.",
-  "author": "Travis Fischer <travis@transitivebullsh.it>",
-  "repository": "transitive-bullshit/nextjs-notion-starter-kit",
+  "description": "My Portfolio website built with Next.js and Notion.",
+  "author": "Juleshwar Babu <juleshwar@protonmail.com>",
+  "repository": "juleshwar/juleshwar.dev",
   "license": "MIT",
   "engines": {
     "node": ">=10"
   },
+  "homepage": "https://juleshwar.dev",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
