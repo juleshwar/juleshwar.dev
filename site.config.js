@@ -7,12 +7,12 @@ module.exports = {
   rootNotionSpaceId: null,
 
   // basic site info (required)
-  name: 'Jooboo',
+  name: 'juleshwar.dev',
   domain: 'juleshwar.dev',
   author: 'Juleshwar Babu',
 
   // open graph metadata (optional)
-  description: 'Moolets',
+  description: 'Amateur dev talks about stuff',
   socialImageTitle: 'Juleshwar',
   socialImageSubtitle: 'Hello World! 👋',
 
