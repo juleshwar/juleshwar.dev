@@ -16,7 +16,6 @@ const siteMetadata = {
   email: 'juleshwar@pm.me',
   github: 'https://github.com/juleshwar',
   twitter: 'https://twitter.com/juleshwar',
-  facebook: 'https://facebook.com',
   linkedin: 'https://www.linkedin.com/in/juleshwar',
   leetcode: 'https://www.leetcode.com/juleshwar',
   locale: 'en-US',
