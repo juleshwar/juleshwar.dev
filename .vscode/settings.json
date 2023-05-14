@@ -33,5 +33,7 @@
     "**/.now/": true,
     "**/.vercel/": true,
     "**/.google.json": true
-  }
+  },
+  "svg.preview.background": "white",
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
