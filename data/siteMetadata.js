@@ -18,6 +18,7 @@ const siteMetadata = {
   twitter: 'https://twitter.com/juleshwar',
   facebook: 'https://facebook.com',
   linkedin: 'https://www.linkedin.com/in/juleshwar',
+  leetcode: 'https://www.leetcode.com/juleshwar',
   locale: 'en-US',
   analytics: {
     // If you want to use an analytics provider you have to add it to the
