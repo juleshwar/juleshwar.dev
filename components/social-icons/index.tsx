@@ -15,7 +15,7 @@ const components = {
   youtube: Youtube,
   linkedin: Linkedin,
   twitter: Twitter,
-  leetcode: LeetCode
+  leetcode: LeetCode,
 }
 
 const SocialIcon = ({ kind, href, size = 8 }) => {
