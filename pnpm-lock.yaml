@@ -1,6 +1,9 @@
 lockfileVersion: '6.0'
 
 dependencies:
+  '@fontsource/open-sans':
+    specifier: ^4.5.14
+    version: 4.5.14
   '@next/bundle-analyzer':
     specifier: 13.1.6
     version: 13.1.6
@@ -2126,6 +2129,10 @@ packages:
 
   /@fal-works/esbuild-plugin-global-externals@2.1.2:
     resolution: {integrity: sha512-cEee/Z+I12mZcFJshKcCqC8tuX5hG3s+d+9nZ3LabqKF1vKdF41B92pJVCBggjAGORAeOzyyDDKrZwIkLffeOQ==}
+    dev: false
+
+  /@fontsource/open-sans@4.5.14:
+    resolution: {integrity: sha512-mBXIIETBlW8q/ocuUN0hyGow2iuf75hQEHQt8R/RJ/HcphVbLg8KB7pHYGbFGDqs75W+SWvTC7JkVeAjT65BuQ==}
     dev: false
 
   /@grpc/grpc-js@1.8.14:
