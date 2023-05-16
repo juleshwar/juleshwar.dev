@@ -1,6 +1,6 @@
 import siteMetadata from '@/data/siteMetadata'
-import projectsData from '@/data/projectsData'
-import Card from '@/components/Card'
+// import projectsData from '@/data/projectsData'
+// import Card from '@/components/Card'
 import { PageSEO } from '@/components/SEO'
 
 export default function Projects() {
@@ -17,9 +17,7 @@ export default function Projects() {
           </p>
         </div>
         <div className="container py-12">
-          <div className='w-full h-full flex items-center justify-center text-9xl'>
-            🚧
-          </div>
+          <div className="w-full h-full flex items-center justify-center text-9xl">🚧</div>
           {/* <div className="-m-4 flex-wrap hidden">
             {projectsData.map((d) => (
               <Card
