@@ -4,7 +4,8 @@
 const siteMetadata = {
   title: 'juleshwar.dev',
   author: 'Juleshwar',
-  description: 'TODO',
+  headerTitle: '',
+  description: 'My ramblings about Software Development, Tech, Coffee, Life and more...',
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'https://juleshwar.dev',
