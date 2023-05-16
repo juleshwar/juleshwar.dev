@@ -4,7 +4,6 @@
 const siteMetadata = {
   title: 'juleshwar.dev',
   author: 'Juleshwar',
-  headerTitle: 'juleshwar.dev',
   description: 'TODO',
   language: 'en-us',
   theme: 'system', // system, dark or light
@@ -13,9 +12,8 @@ const siteMetadata = {
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
   socialBanner: '/static/images/twitter-card.png',
-  email: 'juleshwar@pm.me',
+  email: 'juleshwar@protonmail.com',
   github: 'https://github.com/juleshwar',
-  twitter: 'https://twitter.com/juleshwar',
   linkedin: 'https://www.linkedin.com/in/juleshwar',
   leetcode: 'https://www.leetcode.com/juleshwar',
   locale: 'en-US',
