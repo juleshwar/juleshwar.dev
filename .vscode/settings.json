@@ -33,5 +33,10 @@
     "**/.now/": true,
     "**/.vercel/": true,
     "**/.google.json": true
+  },
+  "svg.preview.background": "custom",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[svg]": {
+    "editor.defaultFormatter": "jock.svg"
   }
 }

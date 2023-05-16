@@ -1,71 +1,31 @@
-// global styles shared across the entire site
-import 'styles/global.css'
+import '@/css/tailwind.css'
+import '@/css/prism.css'
+import 'katex/dist/katex.css'
+import '@fontsource/open-sans'
+// import '@/css/docsearch.css' // Uncomment if using algolia docsearch
+// import '@docsearch/css' // Uncomment if using algolia docsearch
 
-// core styles shared by all of react-notion-x (required)
-import 'react-notion-x/src/styles.css'
+import { ThemeProvider } from 'next-themes'
+import type { AppProps } from 'next/app'
+import Head from 'next/head'
 
-// used for code syntax highlighting (optional)
-import 'prismjs/themes/prism-coy.css'
+import siteMetadata from '@/data/siteMetadata'
+import { Analytics } from 'pliny/analytics'
+import { SearchProvider } from 'pliny/search'
+import LayoutWrapper from '@/components/LayoutWrapper'
 
-// this might be better for dark mode
-// import 'prismjs/themes/prism-okaidia.css'
-
-// used for collection views selector (optional)
-// TODO: re-add if we enable collection view dropdowns
-// import 'rc-dropdown/assets/index.css'
-
-// used for rendering equations (optional)
-import 'katex/dist/katex.min.css'
-
-// core styles for static tweet renderer (optional)
-import 'react-static-tweets/styles.css'
-
-// global style overrides for notion
-import 'styles/notion.css'
-
-//custom style overrides for notion
-import 'styles/custom.css'
-
-// global style overrides for prism theme (optional)
-import 'styles/prism-theme.css'
-
-// here we're bringing in any languages we want to support for
-// syntax highlighting via Notion's Code block
-import 'prismjs'
-import 'prismjs/components/prism-markup'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-typescript'
-import 'prismjs/components/prism-scss'
-import 'prismjs/components/prism-css'
-
-import React from 'react'
-import { useRouter } from 'next/router'
-import { bootstrap } from 'lib/bootstrap-client'
-import { fathomId, fathomConfig } from 'lib/config'
-import * as Fathom from 'fathom-client'
-
-if (typeof window !== 'undefined') {
-  bootstrap()
-}
-
-export default function App({ Component, pageProps }) {
-  const router = useRouter()
-
-  React.useEffect(() => {
-    if (fathomId) {
-      Fathom.load(fathomId, fathomConfig)
-
-      function onRouteChangeComplete() {
-        Fathom.trackPageview()
-      }
-
-      router.events.on('routeChangeComplete', onRouteChangeComplete)
-
-      return () => {
-        router.events.off('routeChangeComplete', onRouteChangeComplete)
-      }
-    }
-  }, [])
-
-  return <Component {...pageProps} />
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <ThemeProvider attribute="class" defaultTheme={siteMetadata.theme}>
+      <Head>
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+      </Head>
+      <Analytics analyticsConfig={siteMetadata.analytics} />
+      <LayoutWrapper>
+        <SearchProvider searchConfig={siteMetadata.search}>
+          <Component {...pageProps} />
+        </SearchProvider>
+      </LayoutWrapper>
+    </ThemeProvider>
+  )
 }
