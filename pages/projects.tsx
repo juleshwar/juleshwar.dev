@@ -13,11 +13,14 @@ export default function Projects() {
             Projects
           </h1>
           <p className="text-lg leading-7 text-gray-500 dark:text-gray-400">
-            Showcase your projects with a hero image (16 x 9)
+            TODO: Will be adding projects soon. Stay tuned.
           </p>
         </div>
         <div className="container py-12">
-          <div className="-m-4 flex flex-wrap">
+          <div className='w-full h-full flex items-center justify-center text-9xl'>
+            🚧
+          </div>
+          {/* <div className="-m-4 flex-wrap hidden">
             {projectsData.map((d) => (
               <Card
                 key={d.title}
@@ -27,7 +30,7 @@ export default function Projects() {
                 href={d.href}
               />
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </>
