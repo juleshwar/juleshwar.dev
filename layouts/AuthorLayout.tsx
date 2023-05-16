@@ -3,6 +3,7 @@ import type { Authors } from 'contentlayer/generated'
 import SocialIcon from '@/components/social-icons'
 import Image from '@/components/Image'
 import { PageSEO } from '@/components/SEO'
+import Logo from '@/data/logo.svg'
 
 interface Props {
   children: ReactNode
@@ -23,13 +24,13 @@ export default function AuthorLayout({ children, content }: Props) {
         </div>
         <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
           <div className="flex flex-col items-center space-x-2 pt-8">
-            <Image
-              src={avatar}
-              alt="avatar"
-              width={192}
-              height={192}
-              className="h-48 w-48 rounded-full"
-            />
+            {/* TODO: Add an avatar */}
+            <div className='h-40 w-40 border py-8 rounded-full border-black dark:border-white'>
+              <Logo
+                alt="avatar"
+                className="h-full w-full fill-black dark:fill-white"
+              />
+            </div>
             <h3 className="pt-4 pb-2 text-2xl font-bold leading-8 tracking-tight">{name}</h3>
             <div className="text-gray-500 dark:text-gray-400">{occupation}</div>
             <div className="text-gray-500 dark:text-gray-400">{company}</div>
