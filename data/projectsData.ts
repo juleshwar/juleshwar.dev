@@ -1,12 +1,11 @@
 const projectsData = [
-  // {
-  //   title: 'A Search Engine',
-  //   description: `What if you could look up any information in the world? Webpages, images, videos
-  //   and more. Google has many features to help you find exactly what you're looking
-  //   for.`,
-  //   imgSrc: '/static/images/google.png',
-  //   href: 'https://www.google.com',
-  // },
+  {
+    title: 'Pixelo',
+    description: `A feel-good drawing app built using React, Tailwind CSS and Airtable.
+    Designed and prototyped on Figma. Game deployed at pixelo.surge.sh`,
+    imgSrc: '/static/images/projects/pixelo.png',
+    href: 'https://pixelo.surge.sh',
+  },
   // {
   //   title: 'The Time Machine',
   //   description: `Imagine being able to travel back in time or to the future. Simple turn the knob
