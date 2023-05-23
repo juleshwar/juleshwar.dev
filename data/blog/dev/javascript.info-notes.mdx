@@ -1,0 +1,1735 @@
+---
+name: javascript.info Notes
+title: javascript.info Notes
+date: '2022-05-23'
+tags: ["Javascript"]
+draft: false
+summary: "Handy notes compiled after going through https://javascript.info. A great compilation for someone who knows the basics of JS but wants to dive deeper and gain mastery"
+type: "Blog"
+---
+# NOTE
+Still in the process of porting contents from https://juleshwar.notion.site/JavaScript-a78c3c235d034f8c91364a37f676fce2
+
+# Resources
+
+[https://javascript.info/](https://javascript.info/)
+
+# Notes
+
+- JavaScript engine's garbage collection algorithm is called “mark-and-sweep”. It *marks* the top level objects referred by *global* as *roots* and recursively visits objects referred by the roots. Basically it forms a reference tree. It then *sweeps* any objects not present in this tree. Browsers apply more optimization over this algo like incremental collection, idle-time collection and generational collection to make it practically viable. [Link](https://javascript.info/garbage-collection#internal-algorithms)
+    
+    ![Garbage collection.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4e20bfa0-0a31-4f1f-a3e4-07fce57cfb26/Garbage_collection.png)
+    
+- The value of `this` is evaluated during the run-time, depending on the context. The value of this is the “*object before the dot”* of the property being referenced
+    
+    ```jsx
+    let user1 = { name: "Daniel" }
+    let user2 = { name: "Hikaru" }
+    
+    let sayName = function() {
+    	window.alert("Hi, my name is ", this.name}
+    }
+    
+    user1.introduceYourself = sayName
+    user2.introduceYourself = sayName
+    
+    user1.introduceYourself() // Hi, my name is Daniel
+    user2.introduceYourself() // Hi, my name is Hikaru
+    ```
+    
+    <aside>
+    💡 “That’s because rules that set `this` do not look at object definition. Only the moment of call matters.”
+    
+    </aside>
+    
+- `this` for a global object results in `undefined` when in strict mode and the global object when not in strict mode 😲
+    
+    ```jsx
+    function sayHi() {
+      alert(this);
+    }
+    
+    sayHi(); // undefined in strict mode
+    sayHi(); // global object in non-strict mode
+    ```
+    
+- The main purpose of constructors is to implement **reusable object creation** code.
+    
+    ```jsx
+    function User(name) {  
+      // this = {};  (implicitly)
+      
+      // add properties to this  
+      this.name = name;  
+      this.person = true;
+      
+      // return this;  (implicitly)
+    }
+    
+    new User("Hikaru")
+    new User("Arjun")
+    ```
+    
+- Constructors do not have a return statement. But if there is a return statement, then the rule is simple:
+    - If `return` is called with an object, then the object is returned instead of `this`.
+    - If return is called with a primitive, it’s ignored.
+- 😵 Shiiiiiii
+    
+    ```jsx
+    let user = new User; // <-- no parentheses
+    // same as
+    let user = new User();
+    ```
+    
+- By specification, only two primitive types may serve as object property keys:
+    - string type, or
+    - symbol type.
+    
+    Otherwise, if one uses another type, such as number, it’s autoconverted to string. So that `obj[1]` is the same as `obj["1"]`, and `obj[true]` is the same as `obj["true"]`.
+    
+- Symbols are “primitive unique values”
+    
+    ```jsx
+    let id1 = Symbol("id"); // "id" is just a description for the Symbol
+    let id2 = Symbol("id");
+    
+    alert(id1 === id2); // false
+    ```
+    
+- `for..in` loops or `Object.keys()` skips over Symbol keys in objects
+- Technically, symbols are not 100% hidden.
+    - There is a built-in method [Object.getOwnPropertySymbols(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertySymbols) that allows us to get all symbols.
+    - Also there is a method named [Reflect.ownKeys(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys) that returns *all* keys of an object including symbolic ones.
+- [https://javascript.info/object-toprimitive#hints](https://javascript.info/object-toprimitive#hints)
+    
+    JavaScript uses something called hints to decide what to convert an object to
+    
+    ```jsx
+    let user = {
+      name: "John",
+      money: 1000,
+    
+      [Symbol.toPrimitive](hint) {
+        alert(`hint: ${hint}`);
+        return hint == "string" ? `{name: "${this.name}"}` : this.money;
+      }
+    };
+    
+    // conversions demo:
+    alert(user); // hint: string -> {name: "John"}
+    alert(+user); // hint: number -> 1000
+    alert(user + 500); // hint: default -> 1500
+    ```
+    
+- [https://javascript.info/primitives-methods#a-primitive-as-an-object](https://javascript.info/primitives-methods#a-primitive-as-an-object)
+    
+    ```jsx
+    let str = "hi"
+    log(str.toUpperCase()) // HI
+    
+    /**
+     * Behind the scenes line 2 looks like console.log((new String("hi")).toUpperCase())
+    */
+    ```
+    
+    Here’s what happens
+    
+    1. `str` is a primitive. To achieve this, a temp **`String`** **object** is created which has all these useful methods.
+    2. The method runs and outputs the result.
+    3. The temp object is destroyed.
+    
+    **The object only exists during the running of that line and is promptly destroyed.**
+    
+- `new Number/Boolean/String` is an anti-pattern!
+    
+    ```jsx
+    // Anti-pattern
+    let zero = new Number(0)
+    console.log(typeof zero) // **object!
+    
+    //** Instead do this
+    zero = Number("0")
+    console.log(typeof zero) // number
+    ```
+    
+    Instead you can just use the constructor without the `new` for type conversion
+    
+- [https://javascript.info/number#more-ways-to-write-a-number](https://javascript.info/number#more-ways-to-write-a-number)
+    
+    ```jsx
+    // All are the same number!
+    const oneB_0 = 1200000000
+    const oneB_1 = 1_200_000_000
+    const oneB_2 = 1.2e9 // You can even do **1.2e-2 for 0.012**
+    ```
+    
+- [https://javascript.info/number#tostring-base](https://javascript.info/number#tostring-base)
+    
+    ```jsx
+    // This is not a typo 😱
+    log( 123456..toString(36) ); // 2n9c -> converted to base 36. But notice the 2 dots
+    ```
+    
+    If we called a method on a number with just one dot, the compiler would think we are making a mistake and missing numbers after the decimal. Two dots tells the compiler that there is nothing after the decimal point. We can also do `(123).toString()`
+    
+- 64 bits are used to store a number: 52 of them are used to store the digits, 11 of them store the position of the decimal point, and 1 bit is for the sign.
+- [https://javascript.info/number#tests-isfinite-and-isnan](https://javascript.info/number#tests-isfinite-and-isnan)
+    
+    `Number.isNaN` is a stricter version of `isNaN`
+    
+    ```jsx
+    alert( Number.isNaN("str") ); // false, because "str" belongs to the string type, not the number type
+    alert( isNaN("str") ); // true, because isNaN converts string "str" into a number and gets NaN as a result of this conversion
+    ```
+    
+- [https://javascript.info/array#get-last-elements-with-at](https://javascript.info/array#get-last-elements-with-at)
+    
+    ```jsx
+    let fruits = ["Apple", "Orange", "Plum"];
+    alert( fruits.at(-1) ); // Plum -> same as fruits[fruits.length-1]
+    ```
+    
+- [https://javascript.info/array#internals](https://javascript.info/array#internals)
+    
+    The ways to misuse an array:
+    
+    - Add a non-numeric property like `arr.test = 5`.
+    - Make holes, like: add `arr[0]` and then `arr[1000]` (and nothing between them).
+    - Fill the array in the reverse order, like `arr[1000]`, `arr[999]` and so on.
+    
+    Any of such misuse removes the optimisations the JS engine reserves for an array #anti-pattern
+    
+- [https://javascript.info/array#performance](https://javascript.info/array#performance) 🤯
+    
+    Methods `push/pop` run fast, while `shift/unshift` are slow. Because the whole array needs to be reindexed in case of `shift/unshift`
+    
+- [https://javascript.info/array#loops](https://javascript.info/array#loops)
+    
+    Using `for…in` for arrays is not advised for a couple of reasons #anti-pattern
+    
+    1. The loop `for..in` iterates over *all properties*, not only the numeric ones. If you have a object which behaves like an array (has indexed props and length prop), 
+    2. The `for..in` loop is optimized for generic objects, not arrays, and thus is 10-100 times slower.
+    
+    Use `for..of` or the ye oldie `for` loop
+    
+- [https://javascript.info/destructuring-assignment](https://javascript.info/destructuring-assignment) #til
+    
+    ```jsx
+    // if second element is not needed
+    let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+    alert( title ); // Consul
+    ```
+    
+- [https://javascript.info/destructuring-assignment](https://javascript.info/destructuring-assignment) #til
+    
+    ```jsx
+    // Works on all kinds of iterables. A syntactic sugar for for...of if you may
+    let [a, b, c] = "abc"; // ["a", "b", "c"]
+    let [one, two, three] = new Set([1, 2, 3]);
+    ```
+    
+- [https://javascript.info/destructuring-assignment](https://javascript.info/destructuring-assignment) #til
+    
+    While destructuring, we can also have functions as default values
+    
+    ```jsx
+    let options = {
+      title: "Menu"
+    };
+    
+    let {width: w = prompt("width?"), height: h = 200, title} = options;
+    
+    alert(title);  // Menu
+    alert(w);      // whatever was entered in the prompt
+    alert(h);      // 200
+    ```
+    
+- [https://javascript.info/destructuring-assignment](https://javascript.info/destructuring-assignment) #til
+    
+    ```jsx
+    let title, width, height;
+    
+    // error in this line
+    // JS thinks that the curly braces comprise a *code block*
+    {title, width, height} = {title: "Menu", width: 200, height: 100};
+    
+    // works
+    ({title, width, height} = {title: "Menu", width: 200, height: 100});
+    ```
+    
+- [https://javascript.info/map-set#iteration-over-set](https://javascript.info/map-set#iteration-over-set) #funny
+    
+    For compatibility with a `Map`’s forEach, when iterating over a `Set`, you get value and then the same value again
+    
+    ```jsx
+    set.forEach((value, valueAgain, set) => {
+      alert(value);
+    });
+    ```
+    
+- [https://javascript.info/iterable#symbol-iterator](https://javascript.info/iterable#symbol-iterator)
+    
+    `[Symbol.iterator]()` is the reason why `for…of` works. When you call for…of on an object,
+    
+    1. It calls `[Symbol.iterator]` method once (or errors if not found). The method must return an ***iterator* – an object with the method `next`**.
+    2. Onward, `for..of` works *only with that returned object*.
+    3. When `for..of` wants the next value, it calls `next()` on that object.
+    4. The result of `next()` must have the form `{done: Boolean, value: any}`, where `done=true` means that the loop is finished, otherwise `value` is the next value.
+    
+    ```jsx
+    // We will be making a object which when iterated over generates values from from to to
+    let obj = {
+      from: 3,
+      to: 8,
+    };
+    
+    obj[Symbol.iterator] = function () {
+      return {
+        current: this.from,
+        last: this.to,
+        next() {
+          if (this.current <= this.last) {
+            return {
+              value: this.current++,
+              done: false,
+            };
+          } else {
+            return {
+              done: true,
+            };
+          }
+        },
+      };
+    };
+    
+    for (let x of obj) {
+      console.log(x); // 3,4,5,6,7,8 
+    }
+    ```
+    
+- [https://javascript.info/iterable#array-like](https://javascript.info/iterable#array-like)
+    - *Iterables* are objects that implement the `Symbol.iterator` method.
+    - *Array-likes* are objects that have indexes and `length`, so they look like arrays.
+    
+    These two feel like arrays but are not arrays! #psych
+    
+- [https://javascript.info/weakmap-weakset#summary](https://javascript.info/weakmap-weakset#summary)
+    
+    `[WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)` is `Map`-like collection that allows **only objects as keys** and removes them together with associated value once they become inaccessible by other means. Although that comes at the cost of not having support for `clear`, `size`, `keys`, `values`… 
+    
+    `WeakMap` and `WeakSet` are used as “secondary” data structures in addition to the “primary” object storage. Once the object is removed from the primary storage, if it is only found as the key of `WeakMap` or in a `WeakSet`, it will be cleaned up automatically. Usecases: [Additional data](https://javascript.info/weakmap-weakset#use-case-additional-data), [Caching](https://javascript.info/weakmap-weakset#use-case-caching)
+    
+
+# Advanced working with functions
+
+## Recursion & Stack
+
+- [https://javascript.info/recursion](https://javascript.info/recursion)
+    
+    The maximal number of nested calls in a recursion is called its *recursion depth.*
+    
+- [https://javascript.info/recursion#the-execution-context-and-stack](https://javascript.info/recursion#the-execution-context-and-stack)
+    
+    The [execution context](https://tc39.github.io/ecma262/#sec-execution-contexts) is an internal data structure that contains details about the execution of a function: where the control flow is now, the current variables, the value of `this` and few other internal details.
+    
+    One function call has exactly one execution context associated with it.
+    
+    When a function makes a nested call, the following happens:
+    
+    - The current function is paused.
+    - The execution context associated with it is remembered in a special data structure called *execution context stack*.
+    - The nested call executes.
+    - After it ends, the old execution context is retrieved from the stack, and the outer function is resumed from where it stopped.
+
+## [Rest Parameters & Spread Syntax](https://javascript.info/rest-parameters-spread)
+
+- [https://javascript.info/rest-parameters-spread](https://javascript.info/rest-parameters-spread)
+    
+    The spread operator can be used in a function definition to *collect* all the incoming/rest of the arguments into an array. The dots literally mean “gather the remaining parameters into an array”.
+    
+    ```jsx
+    function sumAll(...args) { // args is the name for the array
+    	return args.reduce((acc, curr) => acc + curr, 0)
+    }
+    
+    alert( sumAll(1) ); // 1
+    alert( sumAll(1, 2) ); // 3
+    alert( sumAll(1, 2, 3) ); // 6
+    ```
+    
+- [https://javascript.info/rest-parameters-spread#the-arguments-variable](https://javascript.info/rest-parameters-spread#the-arguments-variable)
+    
+    `arguments` is an **array-like** object in a traditional function which has all the arguments by their index. Although `arguments` is both array-like and iterable, it’s not an array.
+    
+    ```jsx
+    function logName(fName, lName) {
+    	for(let name of arguments) { **// Iterable**
+    		console.log(name) // "Daniel", "Naroditsky"
+    	}
+    
+    	**// Array-like**
+    	console.log(arguments[0]) // "Daniel"
+    	console.log(arguments[1]) // "Naroditsky"
+    
+    	// Not an array!
+    	**console.log(arguments.map) // undefined!**
+    
+    	console.log("Hi I'm ", arguments[0], " ", arguments[1])
+    }
+    
+    logName("Daniel", "Naroditsky")
+    ```
+    
+- [https://javascript.info/rest-parameters-spread#the-arguments-variable](https://javascript.info/rest-parameters-spread#the-arguments-variable)
+    
+    Arrow functions don’t have the `arguments` array. If we try to access the array inside an arrow function, it takes the array from the closest traditional function parent
+    
+- Difference between `Array.from` and `…`
+    
+    `Array.from` converts both *iterables* and *array-likes* into an array. But `…` only converts iterables into arrays
+    
+    - Code
+        
+        ```jsx
+        const arrayLike = {
+        	0: "A",
+        	1: "B",
+        	2: "C",
+          length: 3
+        }
+        
+        const iterable = {
+        	from: 1,
+        	to: 4,
+        
+        	[Symbol.iterator]: function() {
+        		return {
+        			current: this.from,
+        			last: this.to,
+        
+        			next() {
+        				if(this.current <= this.last) {
+        					return { value: this.current++, done: false}				
+        				}
+        				return { done: true }
+        			}
+        		}
+        	}
+        }
+        
+        console.log(Array.from(arrayLike)); // ["A", "B", "C"]
+        console.log(Array.from(iterable)); // [1, 2, 3, 4]
+        
+        console.log([...iterable]) // [1, 2, 3, 4]
+        [...arrayLike] // Syntax Error!
+        ```
+        
+- We can use this to isolate a piece of code that does its own task, with variables that only belong to it.
+    
+    ```jsx
+    {
+      // show message
+      let message = "Hello";
+      alert(message);
+    }
+    
+    {
+      // show another message
+      let message = "Goodbye";
+      alert(message);
+    }
+    ```
+    
+
+## [Variable Scope & Closure](https://javascript.info/closure)
+
+### [Lexical Environment](https://javascript.info/closure#lexical-environment)
+
+Every running function, code block `{...}`, and the script as a whole have an internal (hidden) associated object known as the *Lexical Environment*. Theoretically, each function is supposed to have a `[[Environment]]` property which links it to its Lexical Environment
+
+The Lexical Environment object consists of two parts:
+
+1. *Environment Record* – an object that stores all local variables as its properties (and some other information like the value of `this`).
+2. A reference to the *outer lexical environment*, the one associated with the outer code.
+- **Variables**
+    
+    **A “variable” is just a property of the special internal object, `Environment Record`. “To get or change a variable” means “to get or change a property of that object”.**
+    
+    The outermost LE is the *global LE* whose outer LE is `null`
+    
+    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c9df5777-0063-4b4c-8d9b-5c08ac3da805/Image.png)
+    
+
+- **Function Declarations**
+    
+    A function is also a value, like a variable.
+    
+    **The difference is that a Function Declaration is instantly fully initialized.**
+    
+    When a Lexical Environment is created, a Function Declaration immediately becomes a ready-to-use function (unlike `let`, that is unusable till the declaration).
+    
+    That’s why we can use a function, declared as Function Declaration, even before the declaration itself. #til
+    
+    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f6a7a38d-68cf-4af5-b219-b4a287a8c5a6/Image.png)
+    
+
+- **Inner & Outer Lexical Environment**
+    
+    When a function runs, at the beginning of the call, a new Lexical Environment is created automatically to store local variables and parameters of the call. #til
+    
+    **When the code wants to access a variable – the inner Lexical Environment is searched first, then the outer one, then the more outer one and so on until the global one.** This is very similar to the how the prototype chain is followed to find a property.
+    
+    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/453a94e2-69b7-428f-a1ac-8acac447b88f/Image.png)
+    
+- ********************************************Returning a function********************************************
+    
+    
+    ```jsx
+    function makeCounter() {
+      let count = 0;
+    
+      return function() {
+        return count++;
+      };
+    }
+    
+    let counter = makeCounter();
+    let counter2 = makeCounter();
+    
+    console.log(counter()) // 0
+    console.log(counter()) // 1
+    console.log(counter()) // 2
+    
+    console.log(counter2()) // 0
+    ```
+    
+    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/05ef15e3-949f-4af8-8396-6c5cd6f05aec/Image.png)
+    
+    At the beginning of each `makeCounter()` call, a **new Lexical Environment object** is created, to store variables for this `makeCounter` run.
+    
+    *What’s different from above use-case is that during the execution of `makeCounter()`, a tiny nested function is created of only one line: `return count++`. We don’t run it yet, only create.*
+    
+    So, `counter.[[Environment]]` has the reference to `{count: 0}` Lexical Environment. That’s how the function remembers where it was created, no matter where it’s called. The `[[Environment]]` reference is set once and forever at function creation time.
+    
+    Later, when `counter()` is called, a new Lexical Environment is created for the call, and its outer Lexical Environment reference is taken from `counter.[[Environment]]`
+    
+    Now when the code inside `counter()` looks for `count` variable, it first searches its own Lexical Environment (empty, as there are no local variables there), then the Lexical Environment of the outer `makeCounter()` call, where it finds and changes it.
+    
+    **A variable is updated in the Lexical Environment where it lives.**
+    
+    <aside>
+    💡 the `count: 0` which is green highlighted becomes `count: 1` after execution of `counter()`
+    
+    </aside>
+    
+    ### Closure
+    
+    A [closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)) is a function that remembers its outer variables and can access them. In JS, all functions are naturally closures (there is only one exception, to be covered in [The "new Function" syntax](https://javascript.info/new-function)).
+    
+    ### Dead Zone
+    
+    ```jsx
+    let x = 1;
+    
+    function func() {
+      console.log(x); // ?
+    
+      let x = 2;
+    }
+    
+    func();
+    ```
+    
+    In this example we can observe the peculiar difference between a “non-existing” and “uninitialized” variable.
+    
+    As you may have read in the article [Variable scope, closure](https://javascript.info/closure), a variable starts in the `“<uninitialized>” ` state from the moment when the execution enters a code block (or a function). And it stays uninitalized until the corresponding `let` statement.
+    
+    In other words, a variable technically exists, but can’t be used before `let`. This zone is called the **dead-zone**
+    
+
+## ****The old "var"****
+
+- Variables, declared with `var`, are either **function-scoped** or **global-scoped**. They pierce through blocks.
+    
+    
+    ```jsx
+    if (true) {
+      var test = true;
+    }
+    
+    window.alert(test); // true, the variable lives after if
+    ```
+    
+    ```jsx
+    if (true) {
+      let test = true;
+    }
+    
+    window.alert(test); // ReferenceError, test is not defined
+    ```
+    
+    ```jsx
+    function sayHi() {
+      if (true) {
+        var phrase = "Hello";
+      }
+    
+      alert(phrase); **// works, phrase is available here**
+    }
+    
+    sayHi();
+    alert(phrase); **// ReferenceError: phrase is not defined**
+    ```
+    
+- “var” can tolerate redeclerations
+- *hoisting* is where `var` variable declarations are raised to the top.
+    
+    ```jsx
+    function sayHi() {
+      phrase = "Hello"; // Assignment
+      if (false) {
+        var phrase; // Declaration -> Raised to the top before the code runs
+      }
+      alert(phrase); // This works!
+    }
+    sayHi();
+    ```
+    
+- IIFE - Immediately Invoked Function Expressions `(function (){ …code })()`
+    
+    This is a way to have scope variables within a block. This syntax basically tells the engine that the function has been created as an expression and can be called rightaway
+    
+    ```jsx
+    // This DOES NOT work!!
+    function() { // <-- SyntaxError: Function statements require a function name
+      var message = "Hello";
+      alert(message); // Hello
+    }();
+    
+    // These all work #til
+    (function() {
+      alert("Parentheses around the function");
+    })();
+    
+    (function() {
+      alert("Parentheses around the whole thing");
+    }());
+    
+    !function() {
+      alert("Bitwise NOT operator starts the expression");
+    }();
+    
+    +function() {
+      alert("Unary plus starts the expression");
+    }();
+    ```
+    
+- 
+
+## Global Object
+
+- In a browser, global functions and variables declared with `var` (not `let/const`!) become the property of the global object. Function declarations have the same effect (statements with `function` keyword in the main code flow, not function expressions).
+    
+    ```jsx
+    var gVar = 5;
+    function moo() {
+    	alert("moo")
+    }
+    
+    alert(window.gVar); // 5 (became a property of the global object)
+    alert(window.moo); // function moo
+    ```
+    
+    **This merely exists as a compatibility feature. It’s not a spec.**
+    
+- `globalThis` what is recently added to the spec. It’s value gets set based on the environment.`window` when the script is running in browser or `global` when run with NodeJS.
+
+## ****Function object, NFE****
+
+- Functions are objects in JS. Functions can be considered as *callable “action objects”*. We can not only call them, but also treat them as objects: add/remove properties, pass by reference etc.
+- Functions have:
+    1. “name” property
+        
+        ```jsx
+        function test() {}
+        console.log(test.name) // "test"
+        ```
+        
+    2. “length” property: signifies the number of arguments for a func
+        
+        ```jsx
+        function f1(a) {}
+        function f2(a, b) {}
+        function many(a, b, ...more) {}
+        
+        alert(f1.length); // 1
+        alert(f2.length); // 2
+        alert(many.length); // 2
+        ```
+        
+        This property is usually used to support polymorphism in functions. (Polymorphism e.g Having one *add* function which can add two numbers and concatenate two strings, based on the arguments)
+        
+- We can also assign properties to functions. These properties are stored in the function directly, not in its outer Lexical Environment. #til
+    
+    ```jsx
+    function makeCounter() {
+      // instead of:
+      // let count = 0
+      function counter() {
+        return counter.count++;
+      };
+      counter.count = 0; // 😧
+      return counter;
+    }
+    
+    let counter = makeCounter();
+    alert( counter() ); // 0
+    alert( counter() ); // 1
+    
+    counter.count = 10 **// NOTE: The variable is accessible from outside. So entirely different from a local function variable**
+    ```
+    
+- Named Function Expression
+    
+    ```jsx
+    let sayHi = function **func**() {}
+    ```
+    
+    This is useful when we want to self-reference the function. The function `func` is not available outside the function sayHi
+    
+    ```jsx
+    let sayHi = function func(who) {
+      if (who) {
+        alert(`Hello, ${who}`);
+      } else {
+        func("Guest"); // use func to re-call itself
+      }
+    };
+    
+    sayHi() // Hello, Guest
+    ```
+    
+    Using `sayHi` instead of `func` fails in certain situations 
+    
+    ```jsx
+    let sayHi = function func(who) {
+      if (who) {
+        alert(`Hello, ${who}`);
+      } else {
+        sayHi("Guest"); // use func to re-call itself
+      }
+    };
+    
+    sayHi() // Hello, Guest
+    
+    let welcome = sayHi
+    sayHi = null
+    
+    welcome() // Error: sayHi is not a function
+    ```
+    
+
+## ****The "new Function" syntax****
+
+- Syntax: `let func = new Function ([arg1, arg2, ...argN], functionBody);`
+    
+    ```jsx
+    new Function('a', 'b', 'return a + b'); // basic syntax
+    new Function('a,b', 'return a + b'); // comma-separated (present due to historical reasons)
+    new Function('a , b', 'return a + b'); // comma-separated with spaces (present due to historical reasons)
+    ```
+    
+- `functionBody` is a string. These are useful when we need to create functions during runtime (getting function body from the server)
+- Functions created with `new Function`, have `[[Environment]]` referencing the **global Lexical Environment**, not the outer one. Hence, they cannot use outer variables. But that’s actually good, because it insures us from errors. Passing parameters explicitly is a much better method architecturally and causes no problems with minifiers.
+
+## ****Scheduling: setTimeout and setInterval****
+
+- Syntax:
+    
+    ```tsx
+    let setTimeoutId = setTimeout(func: Function |code: string, [delay]: number, ***[arg1]: any, [arg2]: any, ...***)
+    let setIntervalId = setInterval(func: Function |code: string, [delay]: number, ***[arg1]: any, [arg2]: any, ...***)
+    ```
+    
+- We can emulate the `setInterval` behaviour using nested `setTimeout`s. Frankly, that’s a more controllable way of running code regularly
+    
+    ```tsx
+    let timerId = setTimeout(function tick() {
+      alert('tick');
+      timerId = setTimeout(tick, 2000); // (*)
+    }, 2000);
+    ```
+    
+    Also the behaviour aligns more with what we expect 👇🏼
+    
+    setInterval timeline
+    
+    ```tsx
+    let i = 1;
+    setInterval(function() {
+      func(i++);
+    }, 100);
+    ```
+    
+    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f2766b29-4f8e-40c1-accf-053a8c08201b/Image.png)
+    
+    setTimeout timeline
+    
+    ```tsx
+    let i = 1;
+    setTimeout(function run() {
+      func(i++);
+      setTimeout(run, 100);
+    }, 100);
+    ```
+    
+    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ecc7842d-581a-4950-99a6-07810fd5e920/Image.png)
+    
+    The nested `setTimeout` **guarantees** the fixed delay (here 100ms) in between running the business logic
+    
+
+## ****Decorators and Forwarding, call/apply****
+
+- Decorators are functions which take a function and add additional functionality to it/alter its behaviour
+    - Example Code
+        
+        ```tsx
+        function slow(x) {
+          // there can be a heavy CPU-intensive job here
+          alert(`Called with ${x}`);
+          return x;
+        }
+        
+        function cachingDecorator(func) {
+          let cache = new Map();
+        
+          return function(x) {
+            if (cache.has(x)) {    // if there's such key in cache
+              return cache.get(x); // read the result from it
+            }
+        
+            let result = func(x);  // otherwise call func
+        
+            cache.set(x, result);  // and cache (remember) the result
+            return result;
+          };
+        }
+        
+        slow = cachingDecorator(slow);
+        
+        alert( slow(1) ); // slow(1) is cached and the result returned
+        alert( "Again: " + slow(1) ); // slow(1) result returned from cache
+        
+        alert( slow(2) ); // slow(2) is cached and the result returned
+        alert( "Again: " + slow(2) ); // slow(2) result returned from cache
+        ```
+        
+- `call` and `apply` allow us to set the context when a function is run
+    
+    ```tsx
+    func.call(context, ...args);
+    func.apply(context, args);
+    ```
+    
+    There’s only a subtle difference regarding `args`:
+    
+    - The spread syntax `...` allows to pass *iterable* `args` as the list to `call`.
+    - The `apply` accepts only *array-like* `args`.
+- Passing all arguments along with the context to another function is called *call forwarding*
+    
+    ```tsx
+    let wrapper = function() {
+      return func.apply(this, arguments);
+    };
+    ```
+    
+- Method Borrowing is a way of *borrowing* a method from one object to use it on another object
+    
+    ```tsx
+    let arrayLikeObject = {
+    	0: "a",
+    	1: "b",
+    	2: "c",
+    	length: 3
+    }
+    
+    // Result required: a,b,c using Array.join method
+    
+    [].join.call(arrayLikeObject)
+    ```
+    
+
+## Function Binding
+
+```tsx
+let boundFunc = func.bind(context, ...args) // Any args provided during binding set fixed arguments for the function func
+```
+
+- An use-case
+    
+    
+    **No context bound**
+    
+    ```tsx
+    let user = {
+      firstName: "John",
+      sayHi() {
+        alert(`Hello, ${this.firstName}!`);
+      }
+    };
+    
+    setTimeout(user.sayHi, 1000); // Hello, undefined
+    
+    **/**
+    	which essentially means
+    	let sayHi = user.sayHi
+    	setTimeout(sayHi, 1000)
+    */**
+    ```
+    
+    **Context is present**
+    
+    This is one solution as the `user` is just accessed from the outer Lexical Environment. But this solution has a problem. If the `user` object changes before the `setTimeout` runs, the code can break
+    
+    ```tsx
+    let user = {
+      firstName: "John",
+      sayHi() {
+        alert(`Hello, ${this.firstName}!`);
+      }
+    };
+    
+    setTimeout(function() {
+      user.sayHi(); // Hello, John!
+    }, 1000);
+    ```
+    
+    - To prevent issues as [mentioned above](https://www.notion.so/JavaScript-a78c3c235d034f8c91364a37f676fce2), we can use bind which **fixes the context in time** to the function. So even if the `user` object is altered before the bound function runs, the bound function runs
+        
+        ```tsx
+        let user = {
+          firstName: "John",
+          sayHi() {
+            alert(`Hello, ${this.firstName}!`);
+          }
+        };
+        
+        setTimeout(user.sayHi.bind(user), 1000); // Hello, John
+        ```
+        
+
+# [Object Properties Config](https://javascript.info/object-properties)
+
+- There are **two kinds of object properties**.
+    - The first kind is *data properties*. All properties that we’ve been using until now were data properties.
+    - The second type is *accessor property*. They are essentially functions that execute on getting and setting a value, but look like regular properties to an external code.
+
+### [Property Flags and Descriptors](https://javascript.info/property-descriptors)
+
+- Object properties, besides a *****value*****, have three special properties so-called “flags”
+    - **`writable`** – if `true`, the value can be changed, otherwise it’s read-only.
+    - **`enumerable`** – if `true`, then listed in loops, otherwise not listed.
+    - **`configurable`** – if `true`, the property can be deleted and these attributes can be modified, otherwise not.
+- [`Object.getOwnPropertyDescriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor)(obj, propName` allows us to see these flags which are generally hidden away. All these three flags are true for props we normally set.
+- Using Object.defineProperty we can edit these flags for properties. Any flag not mentioned while defining a property is considered `false` by default
+- Making a property non-configurable is a one-way road. We cannot change it back with `defineProperty`. The only other change we can make to such a property is make its `writable` flag from `true` to `false`
+- Other handy property configurators
+    - **[Object.preventExtensions(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/preventExtensions):** Forbids the addition of new properties to the object.
+    - **[Object.seal(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal):** Forbids adding/removing of properties. Sets `configurable: false` for all existing properties.
+    - **[Object.freeze(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze):** Forbids adding/removing/changing of properties. Sets `configurable: false, writable: false` for all existing properties.
+
+### ****Property Getters and Setters****
+
+```jsx
+let obj = {
+  get propName() {
+    // getter, the code executed on getting obj.propName
+  },
+
+  set propName(value) {
+    // setter, the code executed on setting obj.propName = value
+  }
+};
+```
+
+- Descriptors for accessor properties are different from those for data properties.
+    - **`get`** – a function without arguments, that works when a property is read,
+    - **`set`** – a function with one argument, that is called when the property is set,
+    - **`enumerable`** – same as for data properties… if false, property doesn’t show up in `for` loops
+    - **`configurable`** – same as for data properties... if `true`, the property can be deleted and these *descriptors* can be modified, otherwise not.
+- A property can either have a *value* descriptor or *get/set* descriptors. Not both at the same time.
+- 
+
+# Prototype
+
+## ****Prototypal inheritance****
+
+- Prototypal inheritance is JS’ way of allowing an object to *extend* or *inherit behaviour* from another object.`[[Prototype]]` is a hidden internal object field which is used to enable this.
+- If a field doesn’t exist on an object, the JS engine follows the *prototype chain* to search for the field.
+
+```jsx
+let animal = {
+  eats: true,
+  walk() {
+    alert("Animal walk");
+  }
+};
+
+let rabbit = {
+  jumps: true,
+  __proto__: animal
+};
+
+let longEar = {
+  earLength: 10,
+  __proto__: rabbit
+};
+
+// walk is taken from the prototype chain
+longEar.walk(); // Animal walk
+alert(longEar.jumps); // true (from rabbit)
+```
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d892117b-b1c3-4286-9804-1ebbd13acd8a/Untitled.png)
+
+- There is another field `__proto__` which exists for historical reasons. It is a historical getter/setter for `[[Prototype]]`. Modern JS way of getting/setting prototype is by using `Object.getPrototypeOf(obj) / Object.setPrototypeOf(objA, objB)`
+- In a method call, the value of `this` is always decided by the *object behind the .(dot)…* even if a method is found in the prototype chain
+    
+    ```jsx
+    let animal = {
+    	run() {
+    		this.isRunning = true
+    	}
+    }
+    
+    let elephant = {
+    	__proto__: animal
+    }
+    
+    elephant.run();
+    elephant.isRunning // true
+    animal.isRunning // undefined
+    ```
+    
+- 
+
+## F.prototype
+
+- We will be talking about the `prototype` object field here. We will be analysing the behaviour of literally setting the `prototype` property to a function.
+- Setting Animal.prototype = animal literally states, when a new object is created using `new Animal`, set its `[[Prototype]]` property to the `animal`.  The `"prototype"` property only has such a special effect when set on a constructor function, and invoked with `new`. On regular objects the `prototype` is nothing special.
+
+```jsx
+let animal = {
+  eats: true
+};
+
+function Rabbit(name) {
+  this.name = name;
+}
+
+Rabbit.prototype = animal;
+
+let rabbit = new Rabbit("White Rabbit"); //  rabbit.__proto__ == animal
+
+alert( rabbit.eats ); // true
+```
+
+![Screenshot 2023-04-28 at 10.27.18 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/43d8c483-5c1b-4144-bb02-3fa56411900d/Screenshot_2023-04-28_at_10.27.18_PM.png)
+
+- Every function has a default prototype assigned to it
+    
+    ```jsx
+    function Test() {}
+    // Test.prototype = { constructor: Test }
+    Test.prototype.constructor === Test // true
+    
+    let testChild = new Test()
+    
+    testChild.prototype === Test.prototype
+    testChild.constructor === Test
+    ```
+    
+    ![Screenshot 2023-04-28 at 10.48.10 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89b17ac8-6bda-4487-bcea-6d707e7c3866/Screenshot_2023-04-28_at_10.48.10_PM.png)
+    
+
+## Promises, async / await
+
+###
+
+# Classes
+
+## Basic Syntax
+
+- In JS, A `class` is a type of function. A  `class ClassName {...}` construct:
+    1. Creates a function named `ClassName`, that becomes the result of the class declaration. The function code is taken from the `constructor` method (assumed empty if no such method is written).
+    2. Stores class methods, such as `sayHi`, in `User.prototype`.
+- Methods are added to the class’ prototype.
+    
+    ```jsx
+    class User {
+      constructor(name) { this.name = name; }
+      sayHi() { alert(this.name); }
+    }
+    
+    // class is a function
+    alert(typeof User); // function
+    
+    // ...or, more precisely, the constructor method
+    alert(User === User.prototype.constructor); // true
+    
+    // The methods are in User.prototype, e.g:
+    alert(User.prototype.sayHi); // the code of the sayHi method
+    
+    // there are exactly two methods in the prototype
+    alert(Object.getOwnPropertyNames(User.prototype)); // constructor, sayHi
+    ```
+    
+- `class` keyword isn’t just a syntactic sugar!
+    1. First, a function created by `class` is labelled by a special internal property `[[IsClassConstructor]]: true`. The language checks for that property in a variety of places. e.g unlike a regular function, it **must** be called with `new`
+    2. Class methods are non-enumerable. A class definition sets `enumerable` flag to `false` for all methods in the `"prototype"`.
+    3. Classes always `use strict`. All code inside the class construct is automatically in strict mode.
+    4. TODO: Add the other differences
+- Classes can be also defined as an expression
+    
+    ```jsx
+    let User = class {
+      sayHi() {
+        alert("Hello");
+      }
+    };
+    
+    // Named Class Expression Syntax
+    let NEClass = class MyClass {
+      sayHi() {
+        log(MyClass); // MyClass
+      }
+    };
+    
+    new NEClass().sayHi() // Shows MyClass definition
+    
+    log(MyClass) // Error. Not accessible outside!
+    ```
+    
+- Classes can also be created “on-the-fly”
+    
+    ```jsx
+    function makeClass(phrase) {
+      return class {
+        sayHi() {
+          alert(phrase);
+        }
+      };
+    }
+    
+    let User = makeClass("Hello");
+    
+    new User().sayHi(); // Hello
+    ```
+    
+- *Class fields* are added to the created objects and not the class prototype
+    
+    ```jsx
+    class User {
+      name = "John";
+    }
+    
+    let user = new User();
+    alert(user.name); // John
+    alert(User.prototype.name); // undefined
+    ```
+    
+
+## Class Inheritance
+
+- `extends` keyword helps extend the properties of a class to another class. How it works 👇
+
+```jsx
+class Animal {
+  constructor(name) {
+    this.speed = 0;
+    this.name = name;
+  }
+  run(speed) {
+    this.speed = speed;
+    alert(`${this.name} runs with speed ${this.speed}.`);
+  }
+}
+
+class Rabbit extends Animal {
+  hide() {
+    alert(`${this.name} hides!`);
+  }
+}
+
+let rabbit = new Rabbit("White Rabbit");
+
+rabbit.run(5); // White Rabbit runs with speed 5.
+rabbit.hide(); // White Rabbit hides!
+```
+
+Internally, `extends` keyword works using the prototype mechanics. It sets `Rabbit.prototype.[[Prototype]]` to `Animal.prototype`. So, if a method is not found in `Rabbit.prototype`, JavaScript takes it from `Animal.prototype`.
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/2b948adb-1da0-4086-a510-d8f8d4511def/Untitled.png)
+
+- `super` keyword can be used to access the parent class methods. Useful when overriding methods.
+    
+    ```jsx
+    class Animal {
+      constructor(name) {
+        this.name = name;
+      }
+      stop() {
+        alert(`${this.name} stops.`);
+      }
+    }
+    
+    class Rabbit extends Animal {
+      hide() {
+    		**super.stop()**
+        alert(`${this.name} hides!`);
+      }
+    }
+    
+    let rabbit = new Rabbit("White Rabbit");
+    
+    rabbit.run(5); // White Rabbit runs with speed 5.
+    rabbit.hide(); // White Rabbit stops. White Rabbit hides!
+    ```
+    
+- Arrow functions don’t have a `super`. The `super` is taken from outside the function.
+
+### Overriding constructor
+
+- When a class `ClassB` is extending class `ClassA`and `ClassB` doesn’t have a `constructor` method, an empty constructor method is generated
+    
+    ```jsx
+    class ClassB {
+    	// generated for *inheriting* classes without own constructors
+    	constructor(...args) {
+    		super(...args)
+    	}
+    }
+    ```
+    
+- When a class `ClassB` is extending class `ClassA`and `ClassB` does have an overridden `constructor` method, `super()` needs to be called before using `this`. That’s because in JS, for inherting classes, the “*derived”* constructors are special. They have a special internal property `[[ConstructorKind]]: ”derived”` so the parent class’ constructor is responsible for providing `this`
+
+### Overriding class fields
+
+- For base classes, which doesn’t extend anything, the class fields are initialised before the `constructor()`
+- For derived classes, the class fields are initialised after the `super()`(be the `super` explicit or implicit)
+- So even if a class field is overridden, if we access it in the constructor of the parent class, we will get the value of the class field in the parent class and not the overridden one.
+    
+    ```jsx
+    class Animal {
+      name = 'animal';
+    
+      constructor() {
+        alert(this.name); // (*)
+      }
+    }
+    
+    class Rabbit extends Animal {
+      name = 'rabbit';
+    }
+    
+    new Animal(); // animal
+    new Rabbit(); // animal
+    ```
+    
+
+### super: internals, [[HomeObject]]
+
+- `super` works by using `[[HomeObject]]` internally. Each method belonging to a class has its HomeObject property set to the class it belongs to. It [does not use the prototype chain](https://javascript.info/class-inheritance#super-internals-homeobject) to reach the root class.
+    
+    ```jsx
+    let animal = {
+      name: "Animal",
+      eat() {         // animal.eat.[[HomeObject]] == animal
+        alert(`${this.name} eats.`);
+      }
+    };
+    
+    let rabbit = {
+      __proto__: animal,
+      name: "Rabbit",
+      eat() {         // rabbit.eat.[[HomeObject]] == rabbit
+        super.eat();
+      }
+    };
+    
+    let longEar = {
+      __proto__: rabbit,
+      name: "Long Ear",
+      eat() {         // longEar.eat.[[HomeObject]] == longEar
+        super.eat();
+      }
+    };
+    
+    // works correctly
+    longEar.eat();  // Long Ear eats.
+    ```
+    
+- `[[HomeObject]]` is set once and can’t be changed for a method. Hence, copying methods with `super` in their business logic to use with some other `this`, can have unintended results.
+- HomeObject is not set for **function properties**. It is only set for object/class methods.
+    
+    ```jsx
+    let animal = {
+      eat: function() { // intentionally writing like this instead of eat() {...
+        // ...
+      }
+    };
+    
+    let rabbit = {
+      __proto__: animal,
+      eat: function() {
+        super.eat();
+      }
+    };
+    
+    rabbit.eat();  // Error calling super (because there's no [[HomeObject]])
+    ```
+    
+
+## static properties and methods
+
+- A static property or method belongs to the Class and not the instances created using the class
+    
+    ```jsx
+    class Bird {
+    	static breathing = "true"
+    	static canFly() {
+    		return this.breathing	
+    	}
+    }
+    Bird.canFly() // "true"
+    Bird.breathing = "false" // static properties can also be set this way
+    Bird.canFly() // "false"
+    
+    const eagle = new Bird()
+    eagle.canFly() // Error. Method does not exist
+    ```
+    
+
+## private and protected object fields
+
+- A field is said to be *protected* if a class or an inheriting class can access/modify the value internally but the field cannot be modified from the outside. It is *private* if only the containing class can read/write the object field. In terms of OOP, this concept of delimiting of the internal interface from the external one is called [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_(computer_programming))
+- In JS, there is no implicit way for making a object field as protected. Although it can be emulated
+    
+    ```jsx
+    class Bottle {
+    	_capacity = 0
+    	constructor(capacity) {
+    		this._capacity = capacity
+    	}
+    
+    	get capacity () {
+    		return this._capacity
+    	}
+    }
+    
+    const waterBottle = new Bottle(2000)
+    waterBottle.capacity // 2000
+    waterBottle.capacity = 1000 // Error: Attempting to reassign readonly property
+    ```
+    
+    <aside>
+    💡 Here waterBottle._capacity is still accessible… But as per convention properties starting with _ are considered internal and should not be accessed in the business logic.
+    
+    </aside>
+    
+- There has been a recent addition to JS for allowing private properties
+    
+    ```jsx
+    class Bottle {
+    	#capacity = 0
+    	water = 0
+    	
+    	constructor(capacity) {
+    		this.#capacity = capacity
+    	}
+    
+    	#getCapacity () {
+    		return this.#capacity
+    	}
+    
+    	fillWater(amount) {
+    		if(amount < 0) this.water = 0
+    		else if (amount > this.#capacity) this.water = this.#capacity
+    		else this.water = amount
+    	}
+    }
+    
+    const waterBottle = new Bottle(2000)
+    waterBottle.fillWater(-10)
+    waterBottle.water // 0
+    waterBottle.fillWater(5000)
+    waterBottle.water // 2000
+    waterBottle.fillWater(50)
+    waterBottle.water // 50
+    waterBottle.#capacity // Error: can only be accessed from Bottle
+    ```
+    
+
+## Class checking: "instanceof"
+
+---
+
+# Code Snippets
+
+```jsx
+let animal = {
+  sayHi() {
+    alert(`I'm an animal`);
+  }
+};
+
+// rabbit inherits from animal
+let rabbit = {
+  __proto__: animal,
+  sayHi() {
+    super.sayHi();
+  }
+};
+
+let plant = {
+  sayHi() {
+    alert("I'm a plant");
+  }
+};
+
+// tree inherits from plant
+let tree = {
+  __proto__: plant,
+  sayHi: rabbit.sayHi
+};
+
+tree.sayHi();  // ??
+```
+
+- Solution
+    
+    `I’m an animal`
+    
+    - The method `tree.sayHi` was copied from `rabbit`.
+    - The method’s `[[HomeObject]]` is `rabbit`, as it was created in `rabbit`. There’s no way to change `[[HomeObject]]`.
+    - The code of `tree.sayHi()` has `super.sayHi()` inside. It goes up from `rabbit` and takes the method from `animal`.
+
+---
+
+```jsx
+function fn() {
+	console.log("hello")
+}
+
+fn.defer(1000) // hello after 1 sec
+```
+
+- Solution
+    
+    ```jsx
+    Function.prototype.defer = function (ms) {
+        setTimeout(this, ms)
+    }
+    ```
+    
+
+---
+
+```jsx
+function fn(a, b) {
+    console.log("hello ", a + b)
+}
+
+fn.defer(1000)(1, 2) // prints "hello 3" after 1 sec
+```
+
+- Solution
+    
+    ```jsx
+    Function.prototype.defer = function (ms) {
+        return (...args) => {
+            setTimeout(() => { this(...args) }, ms)
+        }
+    }
+    ```
+    
+
+---
+
+```jsx
+class Animal {
+  constructor(name) {
+    this.speed = 0;
+    this.name = name;
+  }
+}
+
+class Rabbit extends Animal {
+  constructor(name, earLength) {
+    this.speed = 0;
+    this.name = name;
+    this.earLength = earLength;
+  }
+}
+
+let rabbit = new Rabbit("White Rabbit", 10); // ?
+```
+
+- Solution
+    
+    `// Error: this is not defined.`
+    
+    That’s because for inheriting classes, constructors should call `super()` before referring `this`. In JS, for inherting classes, the “*derived”* constructors are special. They have a special internal property `[[ConstructorKind]]: ”derived”` so the parent class’ constructor is responsible for providing `this`
+    
+    Proper code
+    
+    ```jsx
+    class Animal {
+      constructor(name) {
+        this.speed = 0;
+        this.name = name;
+      }
+    }
+    
+    class Rabbit extends Animal {
+      constructor(name, earLength) {
+        super(name);
+        this.earLength = earLength;
+      }
+    }
+    
+    let rabbit = new Rabbit("White Rabbit", 10);
+    alert(rabbit.name); // White Rabbit
+    alert(rabbit.earLength); // 10
+    ```
+    
+
+---
+
+```jsx
+function f(phrase) {
+  return class {
+    sayHi() { console.log(phrase); }
+  };
+}
+
+class User extends f("Hello") {}
+
+new User().sayHi(); // ?
+```
+
+- Solution
+    
+    Ayo! That syntax looks funny doesn’t it. But it works! “Hello” gets logged to the console.
+    
+
+---
+
+```jsx
+class Button {
+  constructor(value) {
+    this.value = value;
+  }
+
+  click() {
+    alert(this.value);
+  }
+}
+
+let button = new Button("hello");
+
+setTimeout(button.click, 1000); // ?
+```
+
+- Solution
+    
+    `undefined` 
+    
+    That’s because we are passing the reference of `button.click`to setTimeout. That’s the same as 
+    
+    ```jsx
+    let fn = button.click
+    setTimeout(fn, 1000)
+    ```
+    
+    To make this work we can either
+    
+    1. Do `setTimeout(() => button.click(), 1000)` or
+    2. `setTimeout(button.click.bind(button), 1000)` or
+    3. Bind the function in the class. *this* is dope
+        
+        ```jsx
+        class Button {
+          constructor(value) {
+            this.value = value;
+          }
+        
+          click = () => {
+            alert(this.value);
+          }
+        }
+        ```
+        
+
+---
+
+```jsx
+let hamster = {
+  stomach: [],
+
+  eat(food) {
+    this.stomach.push(food);
+  }
+};
+
+let speedy = {
+  __proto__: hamster,
+};
+
+let lazy = {
+  __proto__: hamster,
+};
+
+// This one found the food
+speedy.eat("apple");
+alert( speedy.stomach ); // [apple]
+
+// This one also has it, why? fix please.
+alert( lazy.stomach ); // [apple]
+```
+
+- Solution
+    
+    As speedy and lazy don’t have their *own* stomachs, all hamsters are sharing a single stomach. Fix
+    
+    ```jsx
+    let hamster = {
+      stomach: [],
+    
+      eat(food) {
+    		/** Fix 1 */
+        this.stomach = [food]; 
+    
+    		/* Fix 2 */ // Here we also retain the previous food instead of overwriting them
+    		if(!this.hasOwnProperty("stomach")) {
+    			this.stomach = []		
+    		}
+    		this.stomach.push(food)
+      }
+    };
+    
+    let speedy = {
+      __proto__: hamster,
+    };
+    
+    let lazy = {
+      __proto__: hamster,
+    };
+    
+    // This one found the food
+    speedy.eat("apple");
+    alert( speedy.stomach ); // [apple]
+    
+    // This one also has it, why? fix please.
+    alert( lazy.stomach ); // [apple]
+    ```
+    
+
+---
+
+```jsx
+class Animal {
+  name = 'animal';
+
+  constructor() {
+    alert(this.name); // (*)
+  }
+}
+
+class Rabbit extends Animal {
+  name = 'rabbit';
+}
+
+new Animal(); // ?
+new Rabbit(); // ?
+```
+
+```jsx
+class Animal {
+  showName() {  // instead of this.name = 'animal'
+    alert('animal');
+  }
+
+  constructor() {
+    this.showName(); // instead of alert(this.name);
+  }
+}
+
+class Rabbit extends Animal {
+  showName() {
+    alert('rabbit');
+  }
+}
+
+new Animal(); // ?
+new Rabbit(); // ?
+```
+
+- Solution
+    
+    `animal, animal`
+    
+    `animal, rabbit`
+    
+    There is a difference in the order of initialisation of class fields and class methods. A parent constructor will take overridden methods from the derived class. But it will always take the parent class fields.
+    
+    1. For base classes, which doesn’t extend anything, the class fields are initialised before the `constructor()`
+    2. For derived classes, the class fields are initialised after the `super()`(be the `super` explicit or implicit)
+
+---
+
+```jsx
+let sayHi = function **func**() {}
+let sayHi2 = function () {}
+
+console.log(sayHi.name, sayHi2.name)
+```
+
+- Solution
+    
+    func, sayHi2
+    
+
+---
+
+```jsx
+console.log(boom, conk);
+let conk = 10;
+if (false) {
+  var boom = 2;
+}
+```
+
+- Solution
+    
+    Error: Cannot access uninitialized variable *conk*
+    
+
+---
+
+```jsx
+let conk = 10;
+console.log(boom, conk);
+if (false) {
+  var boom = 2;
+}
+```
+
+- Solution
+    
+    undefined, 10
+    
+    `boom` gets *hoisted* as it is a var and it escapes all code blocks until it reaches its function-boundary or global-boundary
+    
+
+---

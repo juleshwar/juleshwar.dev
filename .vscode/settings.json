@@ -38,5 +38,11 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
+  },
+  "eslint.format.enable": true,
+  "eslint.packageManager": "pnpm",
+  "eslint.validate": ["tsx", "jsx"],
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   }
 }
