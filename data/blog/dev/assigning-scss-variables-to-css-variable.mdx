@@ -1,0 +1,27 @@
+---
+title: Assigning SCSS variables to CSS variables
+date: '2022-05-22'
+tags: ['Software Development', 'CSS', 'SCSS']
+draft: false
+---
+## TLDR
+```scss
+.my-class {
+	--css-variable: #{$scss-variable};
+}
+```
+---
+Came across this use-case when integrating a third-party package. I initially tried `--background-color: $default-color;` but it did not work. Then a google search led me to the answer.
+
+```scss
+$default-color: #F0F;
+
+.my-class {
+	--background-color: #{$default-color};
+}
+
+/* Notice how the #{} is not required when using it to set a property */
+.another-class {
+	background-color: $default-color;
+}
+```
