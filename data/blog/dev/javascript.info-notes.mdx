@@ -1,25 +1,40 @@
 ---
-name: javascript.info Notes
 title: javascript.info Notes
 date: '2022-05-23'
-tags: ["Javascript"]
+tags: ["javascript", "javascript.info-series"]
 draft: false
 summary: "Handy notes compiled after going through https://javascript.info. A great compilation for someone who knows the basics of JS but wants to dive deeper and gain mastery"
 type: "Blog"
 ---
 # NOTE
-Still in the process of porting contents from https://juleshwar.notion.site/JavaScript-a78c3c235d034f8c91364a37f676fce2
+Still in the process of porting contents from https://juleshwar.notion.site/JavaScript-a78c3c235d034f8c91364a37f676fce2  
+Currently the post is not very accessible. So I would recommend visiting the Notion page where the contents are decently organised.
 
-# Resources
+I am planning to post a series of blog posts covering the contents of this post topic-by-topic. I'll update the links once the posts are up ⬇
 
-[https://javascript.info/](https://javascript.info/)
+1. <a key="objects-basics" href="/blog/dev/javascript.info-notes/objects-basics"> Objects - The Basics </a>
+---
+# Table Of Contents
+<TOCInline toc={props.toc} exclude={["Table Of Contents", "NOTE"]} indentDepth={2} asDisclosure/>
+   
+# What Is This?
+Handy notes compiled after going through https://javascript.info. A great compilation for someone who knows the basics of JS but wants to dive deeper and gain mastery.
 
-# Notes
+# Objects: The Basics
 
-- JavaScript engine's garbage collection algorithm is called “mark-and-sweep”. It *marks* the top level objects referred by *global* as *roots* and recursively visits objects referred by the roots. Basically it forms a reference tree. It then *sweeps* any objects not present in this tree. Browsers apply more optimization over this algo like incremental collection, idle-time collection and generational collection to make it practically viable. [Link](https://javascript.info/garbage-collection#internal-algorithms)
+- Link: https://javascript.info/object-basics
+
+## Garbage Collection
+
+- Link: https://javascript.info/garbage-collection
+- JavaScript engine’s garbage collection algorithm is called “mark-and-sweep”. It *marks* the top level objects referred by *global* as *roots* and recursively visits objects referred by the roots. Basically it forms a reference tree. It then *sweeps* any objects not present in this tree. Browsers apply more optimization over this algo like incremental collection, idle-time collection and generational collection to make it practically viable. [Link](https://javascript.info/garbage-collection#internal-algorithms)
     
     ![Garbage collection.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4e20bfa0-0a31-4f1f-a3e4-07fce57cfb26/Garbage_collection.png)
     
+
+## Object methods, “this”
+
+- Link: https://javascript.info/object-methods
 - The value of `this` is evaluated during the run-time, depending on the context. The value of this is the “*object before the dot”* of the property being referenced
     
     ```jsx
@@ -53,6 +68,10 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     sayHi(); // global object in non-strict mode
     ```
     
+
+## Constructor, operator "new"
+
+- Link: https://javascript.info/constructor-new
 - The main purpose of constructors is to implement **reusable object creation** code.
     
     ```jsx
@@ -73,7 +92,7 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
 - Constructors do not have a return statement. But if there is a return statement, then the rule is simple:
     - If `return` is called with an object, then the object is returned instead of `this`.
     - If return is called with a primitive, it’s ignored.
-- 😵 Shiiiiiii
+- #til
     
     ```jsx
     let user = new User; // <-- no parentheses
@@ -81,6 +100,10 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     let user = new User();
     ```
     
+
+## Symbol type
+
+- Link: https://javascript.info/symbol
 - By specification, only two primitive types may serve as object property keys:
     - string type, or
     - symbol type.
@@ -100,9 +123,11 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
 - Technically, symbols are not 100% hidden.
     - There is a built-in method [Object.getOwnPropertySymbols(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertySymbols) that allows us to get all symbols.
     - Also there is a method named [Reflect.ownKeys(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys) that returns *all* keys of an object including symbolic ones.
-- [https://javascript.info/object-toprimitive#hints](https://javascript.info/object-toprimitive#hints)
-    
-    JavaScript uses something called hints to decide what to convert an object to
+
+## Object to Primitive conversion
+
+- Link: https://javascript.info/object-toprimitive
+- JavaScript uses something called *hints* to decide what to convert an object to
     
     ```jsx
     let user = {
@@ -121,7 +146,15 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     alert(user + 500); // hint: default -> 1500
     ```
     
-- [https://javascript.info/primitives-methods#a-primitive-as-an-object](https://javascript.info/primitives-methods#a-primitive-as-an-object)
+
+# Data types
+
+- Link: https://javascript.info/data-types
+
+## Methods of primitives
+
+- Link: https://javascript.info/primitives-methods
+- 
     
     ```jsx
     let str = "hi"
@@ -154,7 +187,11 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     
     Instead you can just use the constructor without the `new` for type conversion
     
-- [https://javascript.info/number#more-ways-to-write-a-number](https://javascript.info/number#more-ways-to-write-a-number)
+
+## Numbers
+
+- Link: https://javascript.info/number
+- https://javascript.info/number#more-ways-to-write-a-number
     
     ```jsx
     // All are the same number!
@@ -163,7 +200,7 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     const oneB_2 = 1.2e9 // You can even do **1.2e-2 for 0.012**
     ```
     
-- [https://javascript.info/number#tostring-base](https://javascript.info/number#tostring-base)
+- https://javascript.info/number#tostring-base
     
     ```jsx
     // This is not a typo 😱
@@ -173,7 +210,7 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     If we called a method on a number with just one dot, the compiler would think we are making a mistake and missing numbers after the decimal. Two dots tells the compiler that there is nothing after the decimal point. We can also do `(123).toString()`
     
 - 64 bits are used to store a number: 52 of them are used to store the digits, 11 of them store the position of the decimal point, and 1 bit is for the sign.
-- [https://javascript.info/number#tests-isfinite-and-isnan](https://javascript.info/number#tests-isfinite-and-isnan)
+- https://javascript.info/number#tests-isfinite-and-isnan
     
     `Number.isNaN` is a stricter version of `isNaN`
     
@@ -182,14 +219,22 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     alert( isNaN("str") ); // true, because isNaN converts string "str" into a number and gets NaN as a result of this conversion
     ```
     
-- [https://javascript.info/array#get-last-elements-with-at](https://javascript.info/array#get-last-elements-with-at)
+
+## Strings
+
+- Link: https://javascript.info/string
+
+## Arrays
+
+- Link: https://javascript.info/array
+- https://javascript.info/array#get-last-elements-with-at
     
     ```jsx
     let fruits = ["Apple", "Orange", "Plum"];
     alert( fruits.at(-1) ); // Plum -> same as fruits[fruits.length-1]
     ```
     
-- [https://javascript.info/array#internals](https://javascript.info/array#internals)
+- https://javascript.info/array#internals
     
     The ways to misuse an array:
     
@@ -199,11 +244,11 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     
     Any of such misuse removes the optimisations the JS engine reserves for an array #anti-pattern
     
-- [https://javascript.info/array#performance](https://javascript.info/array#performance) 🤯
+- https://javascript.info/array#performance 🤯
     
     Methods `push/pop` run fast, while `shift/unshift` are slow. Because the whole array needs to be reindexed in case of `shift/unshift`
     
-- [https://javascript.info/array#loops](https://javascript.info/array#loops)
+- https://javascript.info/array#loops
     
     Using `for…in` for arrays is not advised for a couple of reasons #anti-pattern
     
@@ -212,62 +257,15 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     
     Use `for..of` or the ye oldie `for` loop
     
-- [https://javascript.info/destructuring-assignment](https://javascript.info/destructuring-assignment) #til
-    
-    ```jsx
-    // if second element is not needed
-    let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
-    alert( title ); // Consul
-    ```
-    
-- [https://javascript.info/destructuring-assignment](https://javascript.info/destructuring-assignment) #til
-    
-    ```jsx
-    // Works on all kinds of iterables. A syntactic sugar for for...of if you may
-    let [a, b, c] = "abc"; // ["a", "b", "c"]
-    let [one, two, three] = new Set([1, 2, 3]);
-    ```
-    
-- [https://javascript.info/destructuring-assignment](https://javascript.info/destructuring-assignment) #til
-    
-    While destructuring, we can also have functions as default values
-    
-    ```jsx
-    let options = {
-      title: "Menu"
-    };
-    
-    let {width: w = prompt("width?"), height: h = 200, title} = options;
-    
-    alert(title);  // Menu
-    alert(w);      // whatever was entered in the prompt
-    alert(h);      // 200
-    ```
-    
-- [https://javascript.info/destructuring-assignment](https://javascript.info/destructuring-assignment) #til
-    
-    ```jsx
-    let title, width, height;
-    
-    // error in this line
-    // JS thinks that the curly braces comprise a *code block*
-    {title, width, height} = {title: "Menu", width: 200, height: 100};
-    
-    // works
-    ({title, width, height} = {title: "Menu", width: 200, height: 100});
-    ```
-    
-- [https://javascript.info/map-set#iteration-over-set](https://javascript.info/map-set#iteration-over-set) #funny
-    
-    For compatibility with a `Map`’s forEach, when iterating over a `Set`, you get value and then the same value again
-    
-    ```jsx
-    set.forEach((value, valueAgain, set) => {
-      alert(value);
-    });
-    ```
-    
-- [https://javascript.info/iterable#symbol-iterator](https://javascript.info/iterable#symbol-iterator)
+
+## Array methods
+
+- Link: https://javascript.info/array-methods
+
+## Iterables
+
+- Link: https://javascript.info/iterable
+- https://javascript.info/iterable#symbol-iterator
     
     `[Symbol.iterator]()` is the reason why `for…of` works. When you call for…of on an object,
     
@@ -307,28 +305,105 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     }
     ```
     
-- [https://javascript.info/iterable#array-like](https://javascript.info/iterable#array-like)
+- https://javascript.info/iterable#array-like
     - *Iterables* are objects that implement the `Symbol.iterator` method.
     - *Array-likes* are objects that have indexes and `length`, so they look like arrays.
     
     These two feel like arrays but are not arrays! #psych
     
-- [https://javascript.info/weakmap-weakset#summary](https://javascript.info/weakmap-weakset#summary)
+
+## Map and Set
+
+- Link: https://javascript.info/map-set
+- https://javascript.info/map-set#iteration-over-set #funny
+    
+    For compatibility with a `Map`’s forEach, when iterating over a `Set`, you get value and then the same value again
+    
+    ```jsx
+    set.forEach((value, valueAgain, set) => {
+      alert(value);
+    });
+    ```
+    
+
+## WeakMap and WeakSet
+
+- Link: https://javascript.info/weakmap-weakset
+- https://javascript.info/weakmap-weakset#summary
     
     `[WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)` is `Map`-like collection that allows **only objects as keys** and removes them together with associated value once they become inaccessible by other means. Although that comes at the cost of not having support for `clear`, `size`, `keys`, `values`… 
     
     `WeakMap` and `WeakSet` are used as “secondary” data structures in addition to the “primary” object storage. Once the object is removed from the primary storage, if it is only found as the key of `WeakMap` or in a `WeakSet`, it will be cleaned up automatically. Usecases: [Additional data](https://javascript.info/weakmap-weakset#use-case-additional-data), [Caching](https://javascript.info/weakmap-weakset#use-case-caching)
     
 
-# Advanced working with functions
+## Object.keys, values, entries
+
+- Link: https://javascript.info/keys-values-entries
+
+## Destructuring assignment
+
+- Link: https://javascript.info/destructuring-assignment
+- https://javascript.info/destructuring-assignment #til
+    
+    ```jsx
+    // if second element is not needed
+    let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+    alert( title ); // Consul
+    ```
+    
+- https://javascript.info/destructuring-assignment #til
+    
+    ```jsx
+    // Works on all kinds of iterables. A syntactic sugar for for...of if you may
+    let [a, b, c] = "abc"; // ["a", "b", "c"]
+    let [one, two, three] = new Set([1, 2, 3]);
+    ```
+    
+- https://javascript.info/destructuring-assignment #til
+    
+    While destructuring, we can also have functions as default values
+    
+    ```jsx
+    let options = {
+      title: "Menu"
+    };
+    
+    let {width: w = prompt("width?"), height: h = 200, title} = options;
+    
+    alert(title);  // Menu
+    alert(w);      // whatever was entered in the prompt
+    alert(h);      // 200
+    ```
+    
+- https://javascript.info/destructuring-assignment #til
+    
+    ```jsx
+    let title, width, height;
+    
+    // error in this line
+    // JS thinks that the curly braces comprise a *code block*
+    {title, width, height} = {title: "Menu", width: 200, height: 100};
+    
+    // works
+    ({title, width, height} = {title: "Menu", width: 200, height: 100});
+    ```
+    
+
+## Date and time
+
+- Link: https://javascript.info/date
+
+## JSON methods, toJSON
+
+- Link: https://javascript.info/json
+
+# Advanced ****working with f****unctions
 
 ## Recursion & Stack
 
-- [https://javascript.info/recursion](https://javascript.info/recursion)
-    
-    The maximal number of nested calls in a recursion is called its *recursion depth.*
-    
-- [https://javascript.info/recursion#the-execution-context-and-stack](https://javascript.info/recursion#the-execution-context-and-stack)
+- Link: https://javascript.info/recursion
+- The maximal number of nested calls in a recursion is called its *recursion depth.*
+- https://javascript.info/recursion#the-execution-context-and-stack
     
     The [execution context](https://tc39.github.io/ecma262/#sec-execution-contexts) is an internal data structure that contains details about the execution of a function: where the control flow is now, the current variables, the value of `this` and few other internal details.
     
@@ -341,11 +416,10 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     - The nested call executes.
     - After it ends, the old execution context is retrieved from the stack, and the outer function is resumed from where it stopped.
 
-## [Rest Parameters & Spread Syntax](https://javascript.info/rest-parameters-spread)
+## Rest Parameters & Spread Syntax
 
-- [https://javascript.info/rest-parameters-spread](https://javascript.info/rest-parameters-spread)
-    
-    The spread operator can be used in a function definition to *collect* all the incoming/rest of the arguments into an array. The dots literally mean “gather the remaining parameters into an array”.
+- Link: https://javascript.info/rest-parameters-spread
+- The spread operator can be used in a function definition to *collect* all the incoming/rest of the arguments into an array. The dots literally mean “gather the remaining parameters into an array”.
     
     ```jsx
     function sumAll(...args) { // args is the name for the array
@@ -357,7 +431,7 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     alert( sumAll(1, 2, 3) ); // 6
     ```
     
-- [https://javascript.info/rest-parameters-spread#the-arguments-variable](https://javascript.info/rest-parameters-spread#the-arguments-variable)
+- https://javascript.info/rest-parameters-spread#the-arguments-variable
     
     `arguments` is an **array-like** object in a traditional function which has all the arguments by their index. Although `arguments` is both array-like and iterable, it’s not an array.
     
@@ -380,7 +454,7 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     logName("Daniel", "Naroditsky")
     ```
     
-- [https://javascript.info/rest-parameters-spread#the-arguments-variable](https://javascript.info/rest-parameters-spread#the-arguments-variable)
+- https://javascript.info/rest-parameters-spread#the-arguments-variable
     
     Arrow functions don’t have the `arguments` array. If we try to access the array inside an arrow function, it takes the array from the closest traditional function parent
     
@@ -441,114 +515,116 @@ Still in the process of porting contents from https://juleshwar.notion.site/Java
     ```
     
 
-## [Variable Scope & Closure](https://javascript.info/closure)
+## Variable Scope & Closure
 
-### [Lexical Environment](https://javascript.info/closure#lexical-environment)
-
-Every running function, code block `{...}`, and the script as a whole have an internal (hidden) associated object known as the *Lexical Environment*. Theoretically, each function is supposed to have a `[[Environment]]` property which links it to its Lexical Environment
-
-The Lexical Environment object consists of two parts:
-
-1. *Environment Record* – an object that stores all local variables as its properties (and some other information like the value of `this`).
-2. A reference to the *outer lexical environment*, the one associated with the outer code.
-- **Variables**
+- Link: https://javascript.info/closure
+- https://javascript.info/closure#lexical-environment
     
-    **A “variable” is just a property of the special internal object, `Environment Record`. “To get or change a variable” means “to get or change a property of that object”.**
+    Every running function, code block `{...}`, and the script as a whole have an internal (hidden) associated object known as the *Lexical Environment*. Theoretically, each function is supposed to have a `[[Environment]]` property which links it to its Lexical Environment
     
-    The outermost LE is the *global LE* whose outer LE is `null`
+    The Lexical Environment object consists of two parts:
     
-    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c9df5777-0063-4b4c-8d9b-5c08ac3da805/Image.png)
+    1. *Environment Record* – an object that stores all local variables as its properties (and some other information like the value of `this`).
+    2. A reference to the *outer lexical environment*, the one associated with the outer code.
+    - **Variables**
+        
+        **A “variable” is just a property of the special internal object, `Environment Record`. “To get or change a variable” means “to get or change a property of that object”.**
+        
+        The outermost LE is the *global LE* whose outer LE is `null`
+        
+        ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c9df5777-0063-4b4c-8d9b-5c08ac3da805/Image.png)
+        
     
-
-- **Function Declarations**
+    - **Function Declarations**
+        
+        A function is also a value, like a variable.
+        
+        **The difference is that a Function Declaration is instantly fully initialized.**
+        
+        When a Lexical Environment is created, a Function Declaration immediately becomes a ready-to-use function (unlike `let`, that is unusable till the declaration).
+        
+        That’s why we can use a function, declared as Function Declaration, even before the declaration itself. #til
+        
+        ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f6a7a38d-68cf-4af5-b219-b4a287a8c5a6/Image.png)
+        
     
-    A function is also a value, like a variable.
-    
-    **The difference is that a Function Declaration is instantly fully initialized.**
-    
-    When a Lexical Environment is created, a Function Declaration immediately becomes a ready-to-use function (unlike `let`, that is unusable till the declaration).
-    
-    That’s why we can use a function, declared as Function Declaration, even before the declaration itself. #til
-    
-    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f6a7a38d-68cf-4af5-b219-b4a287a8c5a6/Image.png)
-    
-
-- **Inner & Outer Lexical Environment**
-    
-    When a function runs, at the beginning of the call, a new Lexical Environment is created automatically to store local variables and parameters of the call. #til
-    
-    **When the code wants to access a variable – the inner Lexical Environment is searched first, then the outer one, then the more outer one and so on until the global one.** This is very similar to the how the prototype chain is followed to find a property.
-    
-    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/453a94e2-69b7-428f-a1ac-8acac447b88f/Image.png)
-    
-- ********************************************Returning a function********************************************
-    
-    
-    ```jsx
-    function makeCounter() {
-      let count = 0;
-    
-      return function() {
-        return count++;
-      };
-    }
-    
-    let counter = makeCounter();
-    let counter2 = makeCounter();
-    
-    console.log(counter()) // 0
-    console.log(counter()) // 1
-    console.log(counter()) // 2
-    
-    console.log(counter2()) // 0
-    ```
-    
-    ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/05ef15e3-949f-4af8-8396-6c5cd6f05aec/Image.png)
-    
-    At the beginning of each `makeCounter()` call, a **new Lexical Environment object** is created, to store variables for this `makeCounter` run.
-    
-    *What’s different from above use-case is that during the execution of `makeCounter()`, a tiny nested function is created of only one line: `return count++`. We don’t run it yet, only create.*
-    
-    So, `counter.[[Environment]]` has the reference to `{count: 0}` Lexical Environment. That’s how the function remembers where it was created, no matter where it’s called. The `[[Environment]]` reference is set once and forever at function creation time.
-    
-    Later, when `counter()` is called, a new Lexical Environment is created for the call, and its outer Lexical Environment reference is taken from `counter.[[Environment]]`
-    
-    Now when the code inside `counter()` looks for `count` variable, it first searches its own Lexical Environment (empty, as there are no local variables there), then the Lexical Environment of the outer `makeCounter()` call, where it finds and changes it.
-    
-    **A variable is updated in the Lexical Environment where it lives.**
-    
-    <aside>
-    💡 the `count: 0` which is green highlighted becomes `count: 1` after execution of `counter()`
-    
-    </aside>
-    
-    ### Closure
-    
-    A [closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)) is a function that remembers its outer variables and can access them. In JS, all functions are naturally closures (there is only one exception, to be covered in [The "new Function" syntax](https://javascript.info/new-function)).
-    
-    ### Dead Zone
-    
-    ```jsx
-    let x = 1;
-    
-    function func() {
-      console.log(x); // ?
-    
-      let x = 2;
-    }
-    
-    func();
-    ```
-    
-    In this example we can observe the peculiar difference between a “non-existing” and “uninitialized” variable.
-    
-    As you may have read in the article [Variable scope, closure](https://javascript.info/closure), a variable starts in the `“<uninitialized>” ` state from the moment when the execution enters a code block (or a function). And it stays uninitalized until the corresponding `let` statement.
-    
-    In other words, a variable technically exists, but can’t be used before `let`. This zone is called the **dead-zone**
-    
+    - **Inner & Outer Lexical Environment**
+        
+        When a function runs, at the beginning of the call, a new Lexical Environment is created automatically to store local variables and parameters of the call. #til
+        
+        **When the code wants to access a variable – the inner Lexical Environment is searched first, then the outer one, then the more outer one and so on until the global one.** This is very similar to the how the prototype chain is followed to find a property.
+        
+        ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/453a94e2-69b7-428f-a1ac-8acac447b88f/Image.png)
+        
+    - ********************************************Returning a function********************************************
+        
+        
+        ```jsx
+        function makeCounter() {
+          let count = 0;
+        
+          return function() {
+            return count++;
+          };
+        }
+        
+        let counter = makeCounter();
+        let counter2 = makeCounter();
+        
+        console.log(counter()) // 0
+        console.log(counter()) // 1
+        console.log(counter()) // 2
+        
+        console.log(counter2()) // 0
+        ```
+        
+        ![Image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/05ef15e3-949f-4af8-8396-6c5cd6f05aec/Image.png)
+        
+        At the beginning of each `makeCounter()` call, a **new Lexical Environment object** is created, to store variables for this `makeCounter` run.
+        
+        *What’s different from above use-case is that during the execution of `makeCounter()`, a tiny nested function is created of only one line: `return count++`. We don’t run it yet, only create.*
+        
+        So, `counter.[[Environment]]` has the reference to `{count: 0}` Lexical Environment. That’s how the function remembers where it was created, no matter where it’s called. The `[[Environment]]` reference is set once and forever at function creation time.
+        
+        Later, when `counter()` is called, a new Lexical Environment is created for the call, and its outer Lexical Environment reference is taken from `counter.[[Environment]]`
+        
+        Now when the code inside `counter()` looks for `count` variable, it first searches its own Lexical Environment (empty, as there are no local variables there), then the Lexical Environment of the outer `makeCounter()` call, where it finds and changes it.
+        
+        **A variable is updated in the Lexical Environment where it lives.**
+        
+        <aside>
+        💡 the `count: 0` which is green highlighted becomes `count: 1` after execution of `counter()`
+        
+        </aside>
+        
+        ### Closure
+        
+        A [closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)) is a function that remembers its outer variables and can access them. In JS, all functions are naturally closures (there is only one exception, to be covered in [The "new Function" syntax](https://javascript.info/new-function)).
+        
+        ### Dead Zone
+        
+        ```jsx
+        let x = 1;
+        
+        function func() {
+          console.log(x); // ?
+        
+          let x = 2;
+        }
+        
+        func();
+        ```
+        
+        In this example we can observe the peculiar difference between a “non-existing” and “uninitialized” variable.
+        
+        As you may have read in the article [Variable scope, closure](https://javascript.info/closure), a variable starts in the “uninitialized” state from the moment when the execution enters a code block (or a function). And it stays uninitalized until the corresponding `let` statement.
+        
+        In other words, a variable technically exists, but can’t be used before `let`. This zone is called the **dead-zone**
+        
 
 ## ****The old "var"****
 
+- Link: https://javascript.info/var
 - Variables, declared with `var`, are either **function-scoped** or **global-scoped**. They pierce through blocks.
     
     
@@ -624,10 +700,10 @@ The Lexical Environment object consists of two parts:
     }();
     ```
     
-- 
 
 ## Global Object
 
+- Link: https://javascript.info/global-object
 - In a browser, global functions and variables declared with `var` (not `let/const`!) become the property of the global object. Function declarations have the same effect (statements with `function` keyword in the main code flow, not function expressions).
     
     ```jsx
@@ -646,6 +722,7 @@ The Lexical Environment object consists of two parts:
 
 ## ****Function object, NFE****
 
+- Link: https://javascript.info/function-object
 - Functions are objects in JS. Functions can be considered as *callable “action objects”*. We can not only call them, but also treat them as objects: add/remove properties, pass by reference etc.
 - Functions have:
     1. “name” property
@@ -731,6 +808,7 @@ The Lexical Environment object consists of two parts:
 
 ## ****The "new Function" syntax****
 
+- Link: https://javascript.info/new-function
 - Syntax: `let func = new Function ([arg1, arg2, ...argN], functionBody);`
     
     ```jsx
@@ -744,6 +822,7 @@ The Lexical Environment object consists of two parts:
 
 ## ****Scheduling: setTimeout and setInterval****
 
+- Link: https://javascript.info/settimeout-setinterval
 - Syntax:
     
     ```tsx
@@ -790,6 +869,7 @@ The Lexical Environment object consists of two parts:
 
 ## ****Decorators and Forwarding, call/apply****
 
+- Link: https://javascript.info/call-apply-decorators
 - Decorators are functions which take a function and add additional functionality to it/alter its behaviour
     - Example Code
         
@@ -861,6 +941,8 @@ The Lexical Environment object consists of two parts:
 
 ## Function Binding
 
+- Link: https://javascript.info/bind
+
 ```tsx
 let boundFunc = func.bind(context, ...args) // Any args provided during binding set fixed arguments for the function func
 ```
@@ -904,7 +986,7 @@ let boundFunc = func.bind(context, ...args) // Any args provided during binding 
     }, 1000);
     ```
     
-    - To prevent issues as [mentioned above](https://www.notion.so/JavaScript-a78c3c235d034f8c91364a37f676fce2), we can use bind which **fixes the context in time** to the function. So even if the `user` object is altered before the bound function runs, the bound function runs
+    - To prevent issues as [mentioned above](https://www.notion.so/JavaScript-a78c3c235d034f8c91364a37f676fce2?pvs=21), we can use bind which **fixes the context in time** to the function. So even if the `user` object is altered before the bound function runs, the bound function runs
         
         ```tsx
         let user = {
@@ -918,14 +1000,28 @@ let boundFunc = func.bind(context, ...args) // Any args provided during binding 
         ```
         
 
-# [Object Properties Config](https://javascript.info/object-properties)
+## Arrow functions revisited
 
+- Link: https://javascript.info/arrow-functions
+- Arrow functions:
+    - Do not have `this`
+    - Do not have `arguments`
+    - Can’t be called with `new`
+    - They also don’t have `super`, but we didn’t study it yet. We will on the chapter [Class inheritance](https://javascript.info/class-inheritance)
+    
+    That’s because they are meant for short pieces of code that do not have their own “context”, but rather work in the current one. And they really shine in that use case.
+    
+
+# Object Properties Config
+
+- Link: https://javascript.info/object-properties
 - There are **two kinds of object properties**.
     - The first kind is *data properties*. All properties that we’ve been using until now were data properties.
     - The second type is *accessor property*. They are essentially functions that execute on getting and setting a value, but look like regular properties to an external code.
 
-### [Property Flags and Descriptors](https://javascript.info/property-descriptors)
+## Property Flags and Descriptors
 
+- Link: https://javascript.info/property-descriptors
 - Object properties, besides a *****value*****, have three special properties so-called “flags”
     - **`writable`** – if `true`, the value can be changed, otherwise it’s read-only.
     - **`enumerable`** – if `true`, then listed in loops, otherwise not listed.
@@ -938,7 +1034,9 @@ let boundFunc = func.bind(context, ...args) // Any args provided during binding 
     - **[Object.seal(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal):** Forbids adding/removing of properties. Sets `configurable: false` for all existing properties.
     - **[Object.freeze(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze):** Forbids adding/removing/changing of properties. Sets `configurable: false, writable: false` for all existing properties.
 
-### ****Property Getters and Setters****
+## ****Property Getters and Setters****
+
+- Link: https://javascript.info/property-accessors
 
 ```jsx
 let obj = {
@@ -962,8 +1060,11 @@ let obj = {
 
 # Prototype
 
+- Link: https://javascript.info/prototypes
+
 ## ****Prototypal inheritance****
 
+- Link: https://javascript.info/prototype-inheritance
 - Prototypal inheritance is JS’ way of allowing an object to *extend* or *inherit behaviour* from another object.`[[Prototype]]` is a hidden internal object field which is used to enable this.
 - If a field doesn’t exist on an object, the JS engine follows the *prototype chain* to search for the field.
 
@@ -1015,6 +1116,7 @@ alert(longEar.jumps); // true (from rabbit)
 
 ## F.prototype
 
+- Link: https://javascript.info/function-prototype
 - We will be talking about the `prototype` object field here. We will be analysing the behaviour of literally setting the `prototype` property to a function.
 - Setting Animal.prototype = animal literally states, when a new object is created using `new Animal`, set its `[[Prototype]]` property to the `animal`.  The `"prototype"` property only has such a special effect when set on a constructor function, and invoked with `new`. On regular objects the `prototype` is nothing special.
 
@@ -1052,14 +1154,143 @@ alert( rabbit.eats ); // true
     ![Screenshot 2023-04-28 at 10.48.10 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89b17ac8-6bda-4487-bcea-6d707e7c3866/Screenshot_2023-04-28_at_10.48.10_PM.png)
     
 
-## Promises, async / await
+## Native prototypes
 
-###
+- Link: https://javascript.info/native-prototypes
+
+## Prototype methods, objects without __proto__
+
+- Link: https://javascript.info/prototype-methods
+
+# Promises, async / await
+
+- Link: https://javascript.info/async
+
+## Introduction: callbacks
+
+- Link: https://javascript.info/callbacks
+- “callback-based” style of asynchronous programming is a style where you have a function which runs asynchronously and the callback function provided as an argument is run after the async function finishes loading
+    
+    ```jsx
+    function waitForTenSeconds(callback) {
+    	setTimeout(callback, 10 * 1000)
+    }
+    const sayHi = () => console.log("Hi")
+    
+    waitForTenSeconds(sayHi) // "Hi" printed after 10 seconds
+    ```
+    
+    “error-first callback” style is a subset of the above approach where the first argument is reserved for any possible errors that may occur for the async function
+    
+    ```jsx
+    function loadScript(src, callback) {
+      let script = document.createElement('script');
+      script.src = src;
+    
+      script.onload = () => callback(null, script);
+      script.onerror = () => callback(new Error(`Script load error for ${src}`));
+    
+      document.head.append(script);
+    }
+    
+    function callback(error, script) {
+    	if(error) {
+    		console.error(`Something went wrong while loading ${script.src}`)	
+    	} else {
+    		console.log(`${script.src} has loaded!`)
+    	}
+    }
+    ```
+    
+- “callback hell” is a term used to describe when the callback-based style of handling async code has deeply nested callbacks and it becomes difficult to follow the code flow.
+
+## Promise
+
+- Link: https://javascript.info/promise-basics
+- Anatomy of a promise
+    
+    ```jsx
+    const promiseObj = new Promise(function (resolve, reject) {})
+    ```
+    
+- The function passed to the promise object is called the executor function. The JS engine passes two functions as arguments to the executor function.
+- The executor function is run the moment the Promise object is created.
+- The internal state of promiseObj is pending until either resolve or reject are called.
+    
+    
+    - The promise can either be
+        - resolved which changes the state of promiseObj to fulfilled
+        - rejected which changes the state of promiseObj to rejected
+    - The promise is said to be settled once it has resolved or rejected
+    
+    ![Screenshot 2023-06-05 at 5.34.20 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/358fe8ab-448b-4f77-a12a-d8f3739c541a/Screenshot_2023-06-05_at_5.34.20_PM.png)
+    
+- The consumers of a Promise object are then, catch and finally
+    - then
+        
+        ```jsx
+        const successCallback = (value) => console.log(value)
+        const errorHandler = (error) => console.error(error)
+        
+        promiseObj.then(successCallback, errorHandler)
+        ```
+        
+        - The second argument for `then` is a function to handle errors which might have occurred during the running of the async function.
+    - catch
+        - This function (in contrast to the second argument of `then`), catches errors which happen both
+            - during the running of the async function and
+            - during the running of the `then` block
+    - finally
+        - This function is a clean-up block which gets no arguments.
+        - If `finally` throws an error, then the execution goes to the nearest error handler.
+- Once the promise is either `resolved` or `rejected` or results in an error, any further calls to `resolve` or `reject` don’t do anything
+- The order in which these consumers subscribe to the promiseObj **yields different results #til**
+    
+    
+    If a promise resolves, the order of execution is,
+    
+    - `finally` before the `then`
+    - `then` block
+    - `finally` after the `then`
+    
+    If a promise rejects, the order is
+    
+    - Whichever error catcher is subscribed first (either the second argument of `then` or the `catch` subscription.
+    - `finally` before the `then`
+    - `finally` after the `then`
+    - Some snippets related to this behaviour
+        - Multiple `finally` consumers ([#Promises](https://www.notion.so/Promises-161bde9ba9c34d40aa370a4ce950211e?pvs=21))
+        - Both then (with error handler) and catch ([#Promises](https://www.notion.so/Promises-db5689a8e5b04c89aa6eab870d04d716?pvs=21))
+
+## Promises chaining
+
+- Link: https://javascript.info/promise-chaining
+
+## Error handling with promises
+
+- Link: https://javascript.info/promise-error-handling
+
+## Promise API
+
+- Link: https://javascript.info/promise-api
+
+## Promisification
+
+- Link: https://javascript.info/promisify
+
+## Microtasks
+
+- Link: https://javascript.info/microtask-queue
+
+## Async/await
+
+- Link: https://javascript.info/async-await
 
 # Classes
 
 ## Basic Syntax
 
+- Link: https://javascript.info/class
 - In JS, A `class` is a type of function. A  `class ClassName {...}` construct:
     1. Creates a function named `ClassName`, that becomes the result of the class declaration. The function code is taken from the `constructor` method (assumed empty if no such method is written).
     2. Stores class methods, such as `sayHi`, in `User.prototype`.
@@ -1141,6 +1372,7 @@ alert( rabbit.eats ); // true
 
 ## Class Inheritance
 
+- Link: https://javascript.info/class-inheritance
 - `extends` keyword helps extend the properties of a class to another class. How it works 👇
 
 ```jsx
@@ -1292,6 +1524,7 @@ Internally, `extends` keyword works using the prototype mechanics. It sets `R
 
 ## static properties and methods
 
+- Link: https://javascript.info/static-properties-methods
 - A static property or method belongs to the Class and not the instances created using the class
     
     ```jsx
@@ -1312,6 +1545,7 @@ Internally, `extends` keyword works using the prototype mechanics. It sets `R
 
 ## private and protected object fields
 
+- Link: https://javascript.info/private-protected-properties-methods
 - A field is said to be *protected* if a class or an inheriting class can access/modify the value internally but the field cannot be modified from the outside. It is *private* if only the containing class can read/write the object field. In terms of OOP, this concept of delimiting of the internal interface from the external one is called [encapsulation](https://en.wikipedia.org/wiki/Encapsulation_(computer_programming))
 - In JS, there is no implicit way for making a object field as protected. Although it can be emulated
     
@@ -1370,7 +1604,17 @@ Internally, `extends` keyword works using the prototype mechanics. It sets `R
     ```
     
 
+## Extending built-in classes
+
+- Link: https://javascript.info/extend-natives
+
 ## Class checking: "instanceof"
+
+- Link: https://javascript.info/instanceof
+
+## Mixins
+
+- Link: https://javascript.info/mixins
 
 ---
 
@@ -1573,6 +1817,54 @@ setTimeout(button.click, 1000); // ?
 
 ---
 
+#Promises
+
+```jsx
+const promiseObj = new Promise((resolve, reject) => {
+    setTimeout(() => reject("some error"), 1000);
+})
+
+promiseObj
+	.then(() => {}, (e) => console.error("Error catcher 1 => ", e))
+  .catch((e) => console.error("Error catcher 2 => ", e))
+
+promiseObj
+  .catch((e) => console.error("Error catcher 2 => ", e))
+	.then(() => {}, (e) => console.error("Error catcher 1 => ", e))
+```
+
+- Solution
+    
+    ```jsx
+    Error catcher 1 => some error
+    Error catcher 2 => some error
+    ```
+    
+
+---
+
+#Promises
+
+```jsx
+new Promise((resolve, reject) => {
+    setTimeout(() => resolve("value"), 1000);
+})
+    .finally(() => console.log("Finally 1"))
+    .then(result => console.log(result))
+    .finally(() => console.log("Finally 2"))
+```
+
+- Solution
+    
+    ```jsx
+    Finally 1
+    value
+    Finally 2
+    ```
+    
+
+---
+
 ```jsx
 let hamster = {
   stomach: [],
@@ -1733,3 +2025,44 @@ if (false) {
     
 
 ---
+
+Write a polyfill for Function.call
+
+```jsx
+const obj = {
+	a: 1,
+	b: 2
+}
+
+// Sample myFunction. myFunction's code can have anything
+function myFunction(str) {
+	return str + " " + this.a
+}
+
+myFunction.callPolyfill(context, "moo") // moo 1
+
+Function.prototype.callPolyfill = function (context, ...args) {
+  // ??	
+}
+```
+
+- Solution
+    
+    ```jsx
+    Function.prototype.callPolyfill = function (context, ...args) {
+        const tag = Symbol("myFunction")
+        context[tag] = this
+    
+    		const result = context[tag](...args)
+    		delete context[tag]
+    
+        return result
+    }
+    
+    Function.prototype.callPolyfill = function (context, ...args) {
+        Object.defineProperty(context, "__myFunction__", { value: this, enumerable: false, })
+    		const result = context.__myFunction__(...args)
+    		delete context.__myFunction__
+        return result
+    }
+    ```
