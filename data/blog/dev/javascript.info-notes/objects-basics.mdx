@@ -1,0 +1,134 @@
+---
+title: Objects - The Basics
+date: '2023-06-08'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: "We learn about the JS engine's garbage collection, keywords like *this* and *new*, a bit about Symbols and JS objects"
+---
+# Table Of Contents
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+---
+Source link: https://javascript.info/object-basics
+
+## Garbage Collection
+- Link: https://javascript.info/garbage-collection
+- JavaScript engine’s garbage collection algorithm is called “mark-and-sweep”. It *marks* the top level objects referred by *global* as *roots* and recursively visits objects referred by the roots. Basically it forms a reference tree. It then *sweeps* any objects not present in this tree. Browsers apply more optimization over this algo like incremental collection, idle-time collection and generational collection to make it practically viable.
+    
+    <Image src="/static/images/blog/javascript.info-notes/garbage-collection.png" width={5000} height={500} alt="Garbage collection"/>
+
+## Object methods, “this”
+
+- Link: https://javascript.info/object-methods
+- The value of `this` is evaluated during the run-time, depending on the context. The value of this is the “*object before the dot”* of the property being referenced
+    
+    ```jsx
+    let user1 = { name: "Daniel" }
+    let user2 = { name: "Hikaru" }
+    
+    let sayName = function() {
+    	window.alert("Hi, my name is ", this.name}
+    }
+    
+    user1.introduceYourself = sayName
+    user2.introduceYourself = sayName
+    
+    user1.introduceYourself() // Hi, my name is Daniel
+    user2.introduceYourself() // Hi, my name is Hikaru
+    ```
+    
+    <aside>
+    💡 “That’s because rules that set `this` do not look at object definition. Only the moment of call matters.”
+    
+    </aside>
+    
+- `this` for a global object results in `undefined` when in strict mode and the global object when not in strict mode 😲
+    
+    ```jsx
+    function sayHi() {
+      alert(this);
+    }
+    
+    sayHi(); // undefined in strict mode
+    sayHi(); // global object in non-strict mode
+    ```
+    
+
+## Constructor, operator "new"
+
+- Link: https://javascript.info/constructor-new
+- The main purpose of constructors is to implement **reusable object creation** code.
+    
+    ```jsx
+    function User(name) {  
+      // this = {};  (implicitly)
+      
+      // add properties to this  
+      this.name = name;  
+      this.person = true;
+      
+      // return this;  (implicitly)
+    }
+    
+    new User("Hikaru")
+    new User("Arjun")
+    ```
+    
+- Constructors do not have a return statement. But if there is a return statement, then the rule is simple:
+    - If `return` is called with an object, then the object is returned instead of `this`.
+    - If return is called with a primitive, it’s ignored.
+- #til
+    
+    ```jsx
+    let user = new User; // <-- no parentheses
+    // same as
+    let user = new User();
+    ```
+    
+
+## Symbol type
+
+- Link: https://javascript.info/symbol
+- By specification, only two primitive types may serve as object property keys:
+    - string type, or
+    - symbol type.
+    
+    Otherwise, if one uses another type, such as number, it’s autoconverted to string. So that `obj[1]` is the same as `obj["1"]`, and `obj[true]` is the same as `obj["true"]`.
+    
+- Symbols are “primitive unique values”
+    
+    ```jsx
+    let id1 = Symbol("id"); // "id" is just a description for the Symbol
+    let id2 = Symbol("id");
+    
+    alert(id1 === id2); // false
+    ```
+    
+- `for..in` loops or `Object.keys()` skips over Symbol keys in objects
+- Technically, symbols are not 100% hidden.
+    - There is a built-in method [Object.getOwnPropertySymbols(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertySymbols) that allows us to get all symbols.
+    - Also there is a method named [Reflect.ownKeys(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/ownKeys) that returns *all* keys of an object including symbolic ones.
+
+## Object to Primitive conversion
+
+- Link: https://javascript.info/object-toprimitive
+- JavaScript uses something called *hints* to decide what to convert an object to
+    
+    ```jsx
+    let user = {
+      name: "John",
+      money: 1000,
+    
+      [Symbol.toPrimitive](hint) {
+        alert(`hint: ${hint}`);
+        return hint == "string" ? `{name: "${this.name}"}` : this.money;
+      }
+    };
+    
+    // conversions demo:
+    alert(user); // hint: string -> {name: "John"}
+    alert(+user); // hint: number -> 1000
+    alert(user + 500); // hint: default -> 1500
+    ```
+
+## Content Updates
+- 2023-06-08 - init
