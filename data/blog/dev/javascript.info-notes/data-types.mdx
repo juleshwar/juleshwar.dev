@@ -1,0 +1,422 @@
+---
+title: Data Types
+date: '2023-06-19'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: "We learn about the different data types in JS and the helper methods that come along with them"
+---
+
+# Table Of Contents
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+---
+Source Link: https://javascript.info/data-types
+
+## Methods of primitives
+- Link: https://javascript.info/primitives-methods
+- The JS Engine implicitly converts the primitive into a relevant object with helper methods. This is for ease of use.
+    
+    ```jsx
+    let str = "hi"
+    log(str.toUpperCase()) // HI
+    
+    /**
+     * Behind the scenes line 2 looks like console.log((new String("hi")).toUpperCase())
+    */
+    ```
+    
+    Here’s what happens
+    
+    1. `str` is a primitive. To achieve this, a temp **`String`** **object** is created which has all these useful methods.
+    2. The method runs and outputs the result.
+    3. The temp object is destroyed.
+    
+    **The object only exists during the running of that line and is promptly destroyed.**
+    
+- `new Number/Boolean/String` is an anti-pattern!
+    
+    ```jsx
+    // Anti-pattern
+    let zero = new Number(0)
+    console.log(typeof zero) // **object!
+    
+    //** Instead do this
+    zero = Number("0")
+    console.log(typeof zero) // number
+    ```
+    
+    Instead you can just use the constructor without the `new` for type conversion
+    
+
+## Numbers
+
+- Link: https://javascript.info/number
+- https://javascript.info/number#more-ways-to-write-a-number
+    
+    ```jsx
+    // All are the same number!
+    const oneB_0 = 1200000000
+    const oneB_1 = 1_200_000_000
+    const oneB_2 = 1.2e9 // You can even do **1.2e-2 for 0.012**
+    ```
+    
+- https://javascript.info/number#tostring-base
+    
+    ```jsx
+    // This is not a typo 😱
+    log( 123456..toString(36) ); // 2n9c -> converted to base 36. But notice the 2 dots
+    ```
+    
+    If we called a method on a number with just one dot, the compiler would think we are making a mistake and missing numbers after the decimal. Two dots tells the compiler that there is nothing after the decimal point. We can also do `(123).toString()`
+    
+- 64 bits are used to store a number: 52 of them are used to store the digits, 11 of them store the position of the decimal point, and 1 bit is for the sign.
+- https://javascript.info/number#tests-isfinite-and-isnan
+    
+    `Number.isNaN` is a stricter version of `isNaN`
+    
+    ```jsx
+    alert( Number.isNaN("str") ); // false, because "str" belongs to the string type, not the number type
+    alert( isNaN("str") ); // true, because isNaN converts string "str" into a number and gets NaN as a result of this conversion
+    ```
+    
+
+## Strings
+
+- Link: https://javascript.info/string
+- Ways to make a string with line breaks.
+    
+    ```jsx
+    'Hola \n Soy Fabiano' // Single quotes
+    "Hello \n I'm Wesley" // Double quotes
+    `
+    	Konichiwa
+    	Hikaru desu
+    ` // Backticks
+    ```
+    
+    - We get an `Unexpected EOF` error if we use ↲ while using quotes
+        
+        ```jsx
+        let a = "Hello
+        World"
+        ```
+        
+- Tagged Templates #til #advanced
+    - Link: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates)
+    - Template tags allow you to parse template literals with a function. The first argument of a tag function contains an array of string values. The remaining arguments are related to the expressions.
+        
+        ```jsx
+        const doIntroduction = function(strings, playerName, favSport) {
+        	const [str0, str1] = strings // ["Hello, I'm ", " and I love playing ", ""]
+        	return str0 + playerName + str1 + favSport
+        }
+        
+        const name = "Ding"
+        const favGame = "Chess"
+        
+        doIntroduction`Hello, I'm ${name} and I love playing ${favGame}` // Hello, I'm Ding and I love playing Chess
+        ```
+        
+    - All of this is allowed
+        1. property access
+        2. function call
+        3. `new Function` syntax
+        4. Another tagged template literal 
+        
+        ```jsx
+        console.log`Hello`; // [ 'Hello' ]
+        console.log.bind(1, 2)`Hello`; // 2 [ 'Hello' ]
+        new Function("console.log(arguments)")`Hello`; // [Arguments] { '0': [ 'Hello' ] }
+        
+        function recursive(strings, ...values) {
+          console.log(strings, values);
+          return recursive;
+        }
+        recursive`Hello``World`;
+        // [ 'Hello' ] []
+        // [ 'World' ] []
+        ```
+        
+    - A simple way to understand this is “the syntax `func`tempLiteral`` breaks down the template literal into an array with two values, [0] having all the string literals and [1] having all the dynamic properties a.k.a `${}`
+        
+        
+        - Consider the example `console.log.bind(null, 1)`Hello ${2}``. This is indeed a complex example but it will help deepen the understanding of what’s happening. The output for this code is
+        
+        ```jsx
+        1
+        [
+        	["Hello", ""],
+        	2
+        ]
+        ```
+        
+        - When we call `console.log.bind(null, 1)` it prints `1` onto the console, then the returned `console.log` function is called with ``Hello ${2}``. The JS engine splits the literal into `[["Hello”, “”], 2]` which is passed to `console.log` and it prints it as it is.
+
+## Arrays
+
+- Link: https://javascript.info/array
+- https://javascript.info/array#get-last-elements-with-at
+    
+    ```jsx
+    let fruits = ["Apple", "Orange", "Plum"];
+    alert( fruits.at(-1) ); // Plum -> same as fruits[fruits.length-1]
+    ```
+    
+- https://javascript.info/array#internals
+    
+    The ways to misuse an array:
+    
+    - Add a non-numeric property like `arr.test = 5`.
+    - Make holes, like: add `arr[0]` and then `arr[1000]` (and nothing between them).
+    - Fill the array in the reverse order, like `arr[1000]`, `arr[999]` and so on.
+    
+    Any of such misuse removes the optimisations the JS engine reserves for an array #anti-pattern
+    
+- https://javascript.info/array#performance 🤯
+    
+    Methods `push/pop` run fast, while `shift/unshift` are slow. Because the whole array needs to be reindexed in case of `shift/unshift`
+    
+- https://javascript.info/array#loops
+    
+    Using `for…in` for arrays is not advised for a couple of reasons #anti-pattern
+    
+    1. The loop `for..in` iterates over *all properties*, not only the numeric ones. If you have a object which behaves like an array (has indexed props and length prop), 
+    2. The `for..in` loop is optimized for generic objects, not arrays, and thus is 10-100 times slower.
+    
+    Use `for..of` or the ye oldie `for` loop
+    
+
+## Array methods
+
+- Link: https://javascript.info/array-methods
+- `splice` can be used to add items at an index in an array (and optionally delete items). We can use negative indices as well to start from the end of the array
+    
+    ```jsx
+    ["Mon", "Tue", "Wed", "Jan", "Sat"].splice(3, 1, "Thu", "Fri") // ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    
+    ["Mon", "Tue", "Wed", "Jan", "Sat"].splice(-2, 1, "Thu", "Fri") // ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    ```
+    
+- `at` can be used to access items and it accepts negative indices as well
+    
+    ```jsx
+    [1,2,3,4,5].at(-1) // 5
+    ```
+    
+- We can use `concat` on [array-like](https://www.notion.so/JavaScript-a78c3c235d034f8c91364a37f676fce2?pvs=21) elements, `[Symbol.isConcatSpreadable]` needs to be set to `true` for it to work as expected
+    
+    
+    ```jsx
+    let moo = {
+    	0:"a",
+    	1:"b",
+    	length: 2
+    }
+    console.log([].concat(moo)) // [{0: 'a', 1: 'b', length: 2}] ❌
+    ```
+    
+    ```jsx
+    let moo = {
+    	0:"a",
+    	1:"b",
+    	length: 2,
+    	[Symbol.isConcatSpreadable]: true
+    }
+    console.log([].concat(moo)) // ['a', 'b'] ✅
+    ```
+    
+- `indexOf` doesn’t handle `NaN` correctly because the internal comparison algorithm has a bug. `includes` which was added later to JS handles it correctly
+    
+    ```jsx
+    [NaN].indexOf(NaN) // -1 ❌
+    [NaN].includes(NaN) // true ✅
+    ```
+    
+- `Array.sort` compares elements as strings by default 🤯 #til
+    
+    
+    ```jsx
+    let arr = [ 1, 2, 15 ];
+    arr.sort();
+    console.log( arr );  // [1, 15, 2] ❌
+    ```
+    
+    ```jsx
+    let arr = [ 1, 2, 15 ];
+    arr.sort((a,b) => +a - +b); // doing +"str" coerces str into a number
+    console.log( arr );  // [1, 2, 15]
+    ```
+    
+- `reduce` is a great way to *******reduce******* an array to a single value. It is a versatile method which can where you can customise the result. It can mimic `map` , `filter`, `forEach`, `join` etc.
+    - `reduceRight` reduces the array from the right
+    
+    ```jsx
+    [1,2,3].join(';') // 1;2;3
+    [1,2,3].reduce((acc, curr) => `${acc};${curr}`) // 1;2;3
+    [1,2,3].reduceRight((acc, curr) => `${acc};${curr}`) // 3;2;1
+    ```
+    
+
+## Iterables
+
+- Link: https://javascript.info/iterable
+- https://javascript.info/iterable#symbol-iterator
+    
+    `[Symbol.iterator]()` is the reason why `for…of` works. When you call for…of on an object,
+    
+    1. It calls `[Symbol.iterator]` method once (or errors if not found). The method must return an ***iterator* – an object with the method `next`**.
+    2. Onward, `for..of` works *only with that returned object*.
+    3. When `for..of` wants the next value, it calls `next()` on that object.
+    4. The result of `next()` must have the form `{done: Boolean, value: any}`, where `done=true` means that the loop is finished, otherwise `value` is the next value.
+    
+    ```jsx
+    // We will be making a object which when iterated over generates values from from to to
+    let obj = {
+      from: 3,
+      to: 8,
+    };
+    
+    obj[Symbol.iterator] = function () {
+      return {
+        current: this.from,
+        last: this.to,
+        next() {
+          if (this.current <= this.last) {
+            return {
+              value: this.current++,
+              done: false,
+            };
+          } else {
+            return {
+              done: true,
+            };
+          }
+        },
+      };
+    };
+    
+    for (let x of obj) {
+      console.log(x); // 3,4,5,6,7,8 
+    }
+    ```
+    
+- https://javascript.info/iterable#array-like
+    - *Iterables* are objects that implement the `Symbol.iterator` method.
+    - *Array-likes* are objects that have indices and `length`, so they look like arrays.
+    
+    These two feel like arrays but are not arrays! #psych
+    
+
+## Map and Set
+
+- Link: https://javascript.info/map-set
+- https://javascript.info/map-set#iteration-over-set #funny
+    
+    For compatibility with a `Map`’s forEach, when iterating over a `Set`, you get value and then the same value again
+    
+    ```jsx
+    set.forEach((value, valueAgain, set) => {
+      alert(value);
+    });
+    ```
+    
+
+## WeakMap and WeakSet
+
+- Link: https://javascript.info/weakmap-weakset
+- https://javascript.info/weakmap-weakset#summary
+    
+    `[WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)` is `Map`-like collection that allows **only objects as keys** and removes them together with associated value once they become inaccessible by other means. Although that comes at the cost of not having support for `clear`, `size`, `keys`, `values`… 
+    
+    `WeakMap` and `WeakSet` are used as “secondary” data structures in addition to the “primary” object storage. Once the object is removed from the primary storage, if it is only found as the key of `WeakMap` or in a `WeakSet`, it will be cleaned up automatically. Usecases: [Additional data](https://javascript.info/weakmap-weakset#use-case-additional-data), [Caching](https://javascript.info/weakmap-weakset#use-case-caching)
+    
+
+## Object.keys, values, entries
+
+- Link: https://javascript.info/keys-values-entries
+- Explanation
+    - [Object.keys(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys) – returns an array of keys.
+    - [Object.values(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values) – returns an array of values.
+    - [Object.entries(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries) – returns an array of `[key, value]` pairs.
+- `Object.fromEntries(array)` can be used to convert an array with key-value pairs into an object
+    
+    ```jsx
+    let fruits = {
+        banana: 20,
+        apple: 5,
+        watermelon: 100
+    }
+    
+    // Doubling the fruits into a new object
+    const doubleFruitsObj = Object.fromEntries(
+        Object.entries(fruits).map(fr => [fr[0], fr[1] * 2])
+    )
+    
+    /**
+    	{
+    	    banana: 40,
+    	    apple: 10,
+    	    watermelon: 200
+    	}
+    */
+    ```
+    
+
+## Destructuring assignment
+
+- Link: https://javascript.info/destructuring-assignment
+- #til
+    
+    ```jsx
+    // if second element is not needed
+    let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+    alert( title ); // Consul
+    ```
+    
+- #til
+    
+    ```jsx
+    // Works on all kinds of iterables. A syntactic sugar for for...of if you may
+    let [a, b, c] = "abc"; // ["a", "b", "c"]
+    
+    let [one, two, three] = new Set([1, 2, 3]); // one = 1, two = 2, three = 3
+    ```
+    
+- While destructuring, we can also have functions as default values #til
+    
+    ```jsx
+    let options = {
+      title: "Menu"
+    };
+    
+    let {width: w = prompt("width?"), height: h = 200, title} = options;
+    
+    alert(title);  // Menu
+    alert(w);      // whatever was entered in the prompt
+    alert(h);      // 200
+    ```
+    
+- #til
+    
+    ```jsx
+    let title, width, height;
+    
+    // error in this line
+    // JS thinks that the curly braces comprise a *code block*
+    {title, width, height} = {title: "Menu", width: 200, height: 100};
+    
+    // works
+    ({title, width, height} = {title: "Menu", width: 200, height: 100});
+    ```
+    
+
+## Date and time [TODO]
+
+- Link: https://javascript.info/date
+
+## JSON methods, toJSON [TODO]
+
+- Link: https://javascript.info/json
+
+---
+# Content Updates
+- 2023-06-19 - init
