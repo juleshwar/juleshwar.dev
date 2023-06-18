@@ -10,6 +10,7 @@ import Logo from '@/data/logo.svg'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
+import { MdOutlineAccessTime } from 'react-icons/md'
 
 const postDateTemplate: Intl.DateTimeFormatOptions = {
   weekday: 'long',
@@ -27,8 +28,9 @@ interface LayoutProps {
 }
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
-  const { path, slug, date, title, tags } = content
+  const { path, slug, date, title, tags, readingTime } = content
   const basePath = path.split('/')[0]
+  const readingTimeMins = Math.round(readingTime.minutes)
 
   return (
     <SectionContainer>
@@ -48,8 +50,16 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                   </dd>
                 </div>
               </dl>
-              <div>
+              <div className="flex flex-col items-center space-y-1 xl:relative">
                 <PageTitle>{title}</PageTitle>
+                {readingTimeMins >= 1 && (
+                  <div className="xl:absolute xl:end-0 xl:inset-y-1/2 flex items-center space-x-1 text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
+                    <MdOutlineAccessTime size={24} />
+                    <p>
+                      {readingTimeMins} {readingTimeMins === 1 ? 'min' : 'mins'}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </header>
