@@ -6,6 +6,7 @@ import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
+import { MdOutlineAccessTime } from 'react-icons/md'
 
 interface PaginationProps {
   totalPages: number
@@ -111,17 +112,18 @@ export default function ListLayout({
         <ul>
           {!filteredBlogPosts.length && 'No posts found.'}
           {displayPosts.map((post) => {
-            const { path, date, title, summary, tags } = post
+            const { path, date, title, summary, tags, readingTime } = post
+            const readingTimeMins = Math.round(readingTime.minutes)
             return (
               <li key={path} className="py-4">
-                <article className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-                  <dl>
+                <article className="space-y-2 xl:grid xl:grid-cols-10 xl:items-baseline xl:space-y-0">
+                  <dl className="xl:col-span-2">
                     <dt className="sr-only">Published on</dt>
                     <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
                       <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                     </dd>
                   </dl>
-                  <div className="space-y-3 xl:col-span-3">
+                  <div className="space-y-3 xl:col-span-7">
                     <div>
                       <h3 className="text-2xl font-bold leading-8 tracking-tight">
                         <Link href={`/${path}`} className="text-gray-900 dark:text-gray-100">
@@ -137,6 +139,16 @@ export default function ListLayout({
                     <div className="prose max-w-none text-gray-500 dark:text-gray-400">
                       {summary}
                     </div>
+                  </div>
+                  <div className="xl:col-span-1 justify-self-end">
+                    <dt className="sr-only">Reading Time</dt>
+                    <dd className="flex items-center space-x-1 text-base leading-6 font-small text-gray-500 dark:text-gray-400">
+                      <MdOutlineAccessTime size={16} />
+                      <p>
+                        {readingTimeMins}
+                        {'m'}
+                      </p>
+                    </dd>
                   </div>
                 </article>
               </li>
