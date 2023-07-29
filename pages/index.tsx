@@ -8,6 +8,7 @@ import { InferGetStaticPropsType } from 'next'
 import { NewsletterForm } from 'pliny/ui/NewsletterForm'
 import { allBlogs } from 'contentlayer/generated'
 import type { Blog } from 'contentlayer/generated'
+import { MdOutlineAccessTime } from 'react-icons/md'
 
 const MAX_DISPLAY = 5
 
@@ -34,18 +35,19 @@ export default function Home({ posts }: InferGetStaticPropsType<typeof getStatic
         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
           {!posts.length && 'No posts found.'}
           {posts.slice(0, MAX_DISPLAY).map((post) => {
-            const { slug, date, title, summary, tags } = post
+            const { slug, date, title, summary, tags, readingTime } = post
+            const readingTimeMins = Math.round(readingTime.minutes)
             return (
               <li key={slug} className="py-12">
                 <article>
-                  <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-                    <dl>
+                  <div className="space-y-2 xl:grid xl:grid-cols-10 xl:items-baseline xl:space-y-0">
+                    <dl className="xl:col-span-2">
                       <dt className="sr-only">Published on</dt>
                       <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
                         <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                       </dd>
                     </dl>
-                    <div className="space-y-5 xl:col-span-3">
+                    <div className="space-y-3 xl:col-span-7">
                       <div className="space-y-6">
                         <div>
                           <h2 className="text-2xl font-bold leading-8 tracking-tight">
@@ -65,6 +67,16 @@ export default function Home({ posts }: InferGetStaticPropsType<typeof getStatic
                         <div className="prose max-w-none text-gray-500 dark:text-gray-400">
                           {summary}
                         </div>
+                      </div>
+                      <div className="xl:col-span-1 justify-self-end">
+                        <dt className="sr-only">Reading Time</dt>
+                        <dd className="flex items-center space-x-1 text-base leading-6 font-small text-gray-500 dark:text-gray-400">
+                          <MdOutlineAccessTime size={16} />
+                          <p>
+                            {readingTimeMins}
+                            {'m'}
+                          </p>
+                        </dd>
                       </div>
                       <div className="text-base font-medium leading-6">
                         <Link
