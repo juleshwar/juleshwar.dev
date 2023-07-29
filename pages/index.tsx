@@ -8,7 +8,7 @@ import { InferGetStaticPropsType } from 'next'
 import { NewsletterForm } from 'pliny/ui/NewsletterForm'
 import { allBlogs } from 'contentlayer/generated'
 import type { Blog } from 'contentlayer/generated'
-import { MdOutlineAccessTime } from 'react-icons/md'
+import { ListingReadingTimeDisplay } from '../components/ListingReadingTimeDisplay'
 
 const MAX_DISPLAY = 5
 
@@ -68,15 +68,8 @@ export default function Home({ posts }: InferGetStaticPropsType<typeof getStatic
                           {summary}
                         </div>
                       </div>
-                      <div className="xl:col-span-1 justify-self-end">
-                        <dt className="sr-only">Reading Time</dt>
-                        <dd className="flex items-center space-x-1 text-base leading-6 font-small text-gray-500 dark:text-gray-400">
-                          <MdOutlineAccessTime size={16} />
-                          <p>
-                            {readingTimeMins}
-                            {'m'}
-                          </p>
-                        </dd>
+                      <div className="xl:hidden">
+                        <ListingReadingTimeDisplay readTime={readingTimeMins} />
                       </div>
                       <div className="text-base font-medium leading-6">
                         <Link
@@ -87,6 +80,9 @@ export default function Home({ posts }: InferGetStaticPropsType<typeof getStatic
                           Read more &rarr;
                         </Link>
                       </div>
+                    </div>
+                    <div className="hidden xl:block xl:col-span-1 justify-self-end">
+                      <ListingReadingTimeDisplay readTime={readingTimeMins} />
                     </div>
                   </div>
                 </article>

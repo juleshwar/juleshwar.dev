@@ -6,7 +6,7 @@ import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
-import { MdOutlineAccessTime } from 'react-icons/md'
+import { ListingReadingTimeDisplay } from '../components/ListingReadingTimeDisplay'
 
 interface PaginationProps {
   totalPages: number
@@ -141,14 +141,7 @@ export default function ListLayout({
                     </div>
                   </div>
                   <div className="xl:col-span-1 justify-self-end">
-                    <dt className="sr-only">Reading Time</dt>
-                    <dd className="flex items-center space-x-1 text-base leading-6 font-small text-gray-500 dark:text-gray-400">
-                      <MdOutlineAccessTime size={16} />
-                      <p>
-                        {readingTimeMins}
-                        {'m'}
-                      </p>
-                    </dd>
+                    <ListingReadingTimeDisplay readTime={readingTimeMins} />
                   </div>
                 </article>
               </li>
