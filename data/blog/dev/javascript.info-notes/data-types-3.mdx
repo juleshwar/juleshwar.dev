@@ -1,0 +1,137 @@
+---
+title: Data Types (Part III)
+date: '2023-07-30'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: "We learn about the Date object, JSON, and its methods"
+---
+# Table Of Contents
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+---
+## Destructuring assignment
+
+- Link: https://javascript.info/destructuring-assignment
+- #til
+    
+    ```jsx
+    // if second element is not needed
+    let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+    alert( title ); // Consul
+    ```
+    
+- #til
+    
+    ```jsx
+    // Works on all kinds of iterables. A syntactic sugar for for...of if you may
+    let [a, b, c] = "abc"; // ["a", "b", "c"]
+    
+    let [one, two, three] = new Set([1, 2, 3]); // one = 1, two = 2, three = 3
+    ```
+    
+- While destructuring, we can also have functions as default values #til
+    
+    ```jsx
+    let options = {
+      title: "Menu"
+    };
+    
+    let {width: w = prompt("width?"), height: h = 200, title} = options;
+    
+    alert(title);  // Menu
+    alert(w);      // whatever was entered in the prompt
+    alert(h);      // 200
+    ```
+    
+- #til
+    
+    ```jsx
+    let title, width, height;
+    
+    // error in this line
+    // JS thinks that the curly braces comprise a *code block*
+    {title, width, height} = {title: "Menu", width: 200, height: 100};
+    
+    // works
+    ({title, width, height} = {title: "Menu", width: 200, height: 100});
+    ```
+    
+
+## Date and time
+
+- Link: https://javascript.info/date
+- Only the first two arguments are mandatory
+    
+    ```jsx
+    new Date(year, month, date, hours, minutes, seconds, ms)
+    ```
+    
+- `new Date(milliseconds)` ****is gives you a `Date` object with time equal to the number of milliseconds which have passed after Jan 1, 1970 UTC+0
+    - Dates before that have negative millis!
+        
+        ```jsx
+        let Jan1_1970 = new Date(0) // 01/01/1970 UTC+0
+        let Dec31_1969 = new Date(-24 * 60 * 60 * 1000); // 31/12/1969 UTC+0
+        ```
+        
+- Helper methods
+    
+    | Method                                                    | Description                                                                                                                                  |
+    | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+    | getFullYear()                                             | Get the year (4 digits)                                                                                                                      |
+    | getMonth()                                                | Get the month (0 to 11)                                                                                                                      |
+    | getDate()                                                 | Get the day of month (1 to 31)                                                                                                               |
+    | getHours(), getMinutes(), getSeconds(), getMilliseconds() | Get the corresponding time components                                                                                                        |
+    | getDay()                                                  | Get the day of week, from 0 (Sunday) to 6 (Saturday). The first day is always Sunday, in some countries that’s not so, but can’t be changed. |
+    | getTime()                                                 | Get the number of milliseconds passed from the January 1st of 1970 UTC+0.                                                                    |
+    | getTimezoneOffset()                                       | Get the difference between UTC and the local time zone, in minutes                                                                           |
+    - All these have a getUTC* counterpart as well
+    - All these also have a corresponding setter
+- The Date objects have an inbuilt autocorrection feature which is resistant to out-of-bound dates, negative days etc.
+    
+    ```jsx
+    let now = new Date()
+    
+    // 120 seconds from now
+    now.setSeconds(now.getSeconds() + 120)
+    
+    // 2 days from now
+    now.setDate(now.getDate() + 2)
+    
+    // Out of range date addition
+    let Feb28_2016 = new Date(28, 1, 2016)
+    Feb28_2016.setDate(Feb28_2016.getDate() + 2)
+    // Feb28_2016 is Mar 1, 2016
+    ```
+    
+- Coercing a Date object to a number returns the number of milliseconds, same as `getTime()`. So subtracting two dates gives the difference in milliseconds.
+    
+    ```jsx
+    const dateA = new Date(2023, 1, 1)
+    const dateB = new Date(2023, 1, 2)
+    
+    +dateA // 1675189800000
+    dateB - dateA // 86400000
+    ```
+    
+- We can also use `Date.now()` for benchmarking a piece of code
+    
+    ```jsx
+    let startTime = Date.now()
+    somePerformanceHeavyCode()
+    let endTime = Date.now()
+    endTime - startTime // Time taken to run the code snippet
+    ```
+    
+- `Date.parse()` can read date from a string
+    - The string format should be: `YYYY-MM-DDTHH:mm:ss.sssZ`, where:
+        - T - Used as the delimiter
+        - The optional 'Z' part denotes the time zone in the format +-hh:mm. A single letter Z would mean UTC+0
+    - Shorter variants are accepted. eg. `YYYY/MM/DD`, `YYYY-MM` or even `YYYY`
+
+## JSON methods, toJSON [TODO]
+
+- Link: https://javascript.info/json
+
+---
+# Content Updates
+- 2023-07-30 - init

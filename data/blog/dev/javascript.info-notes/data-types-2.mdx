@@ -1,0 +1,188 @@
+---
+title: Data Types (Part II)
+date: '2023-07-29'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: "We learn about Array methods, Iterables, Maps, Sets, and Object methods"
+---
+# Table Of Contents
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+---
+Source Link: https://javascript.info/data-types
+
+## Array methods
+
+- Link: https://javascript.info/array-methods
+- `splice` can be used to add items at an index in an array (and optionally delete items). We can use negative indices as well to start from the end of the array
+    
+    ```jsx
+    ["Mon", "Tue", "Wed", "Jan", "Sat"].splice(3, 1, "Thu", "Fri") // ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    
+    ["Mon", "Tue", "Wed", "Jan", "Sat"].splice(-2, 1, "Thu", "Fri") // ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    ```
+    
+- `at` can be used to access items and it accepts negative indices as well
+    
+    ```jsx
+    [1,2,3,4,5].at(-1) // 5
+    ```
+    
+- We can use `concat` on [array-like](https://www.notion.so/JavaScript-a78c3c235d034f8c91364a37f676fce2?pvs=21) elements, `[Symbol.isConcatSpreadable]` needs to be set to `true` for it to work as expected
+    
+    
+    ```jsx
+    let moo = {
+    	0:"a",
+    	1:"b",
+    	length: 2
+    }
+    console.log([].concat(moo)) // [{0: 'a', 1: 'b', length: 2}] ❌
+    ```
+    
+    ```jsx
+    let moo = {
+    	0:"a",
+    	1:"b",
+    	length: 2,
+    	[Symbol.isConcatSpreadable]: true
+    }
+    console.log([].concat(moo)) // ['a', 'b'] ✅
+    ```
+    
+- `indexOf` doesn’t handle `NaN` correctly because the internal comparison algorithm has a bug. `includes` which was added later to JS handles it correctly
+    
+    ```jsx
+    [NaN].indexOf(NaN) // -1 ❌
+    [NaN].includes(NaN) // true ✅
+    ```
+    
+- `Array.sort` compares elements as strings by default 🤯 #til
+    
+    
+    ```jsx
+    let arr = [ 1, 2, 15 ];
+    arr.sort();
+    console.log( arr );  // [1, 15, 2] ❌
+    ```
+    
+    ```jsx
+    let arr = [ 1, 2, 15 ];
+    arr.sort((a,b) => +a - +b); // doing +"str" coerces str into a number
+    console.log( arr );  // [1, 2, 15]
+    ```
+    
+- `reduce` is a great way to *******reduce******* an array to a single value. It is a versatile method which can where you can customise the result. It can mimic `map` , `filter`, `forEach`, `join` etc.
+    - `reduceRight` reduces the array from the right
+    
+    ```jsx
+    [1,2,3].join(';') // 1;2;3
+    [1,2,3].reduce((acc, curr) => `${acc};${curr}`) // 1;2;3
+    [1,2,3].reduceRight((acc, curr) => `${acc};${curr}`) // 3;2;1
+    ```
+    
+
+## Iterables
+
+- Link: https://javascript.info/iterable
+- https://javascript.info/iterable#symbol-iterator
+    
+    `[Symbol.iterator]()` is the reason why `for…of` works. When you call for…of on an object,
+    
+    1. It calls `[Symbol.iterator]` method once (or errors if not found). The method must return an ***iterator* – an object with the method `next`**.
+    2. Onward, `for..of` works *only with that returned object*.
+    3. When `for..of` wants the next value, it calls `next()` on that object.
+    4. The result of `next()` must have the form `{done: Boolean, value: any}`, where `done=true` means that the loop is finished, otherwise `value` is the next value.
+    
+    ```jsx
+    // We will be making a object which when iterated over generates values from from to to
+    let obj = {
+      from: 3,
+      to: 8,
+    };
+    
+    obj[Symbol.iterator] = function () {
+      return {
+        current: this.from,
+        last: this.to,
+        next() {
+          if (this.current <= this.last) {
+            return {
+              value: this.current++,
+              done: false,
+            };
+          } else {
+            return {
+              done: true,
+            };
+          }
+        },
+      };
+    };
+    
+    for (let x of obj) {
+      console.log(x); // 3,4,5,6,7,8 
+    }
+    ```
+    
+- https://javascript.info/iterable#array-like
+    - *Iterables* are objects that implement the `Symbol.iterator` method.
+    - *Array-likes* are objects that have indices and `length`, so they look like arrays.
+    
+    These two feel like arrays but are not arrays! #psych
+
+## Map and Set
+
+- Link: https://javascript.info/map-set
+- https://javascript.info/map-set#iteration-over-set #funny
+    
+    For compatibility with a `Map`’s forEach, when iterating over a `Set`, you get value and then the same value again
+    
+    ```jsx
+    set.forEach((value, valueAgain, set) => {
+      alert(value);
+    });
+    ```
+    
+
+## WeakMap and WeakSet
+
+- Link: https://javascript.info/weakmap-weakset
+- https://javascript.info/weakmap-weakset#summary
+    
+    `[WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)` is `Map`-like collection that allows **only objects as keys** and removes them together with associated value once they become inaccessible by other means. Although that comes at the cost of not having support for `clear`, `size`, `keys`, `values`… 
+    
+    `WeakMap` and `WeakSet` are used as “secondary” data structures in addition to the “primary” object storage. Once the object is removed from the primary storage, if it is only found as the key of `WeakMap` or in a `WeakSet`, it will be cleaned up automatically. Usecases: [Additional data](https://javascript.info/weakmap-weakset#use-case-additional-data), [Caching](https://javascript.info/weakmap-weakset#use-case-caching)
+    
+
+## Object.keys, values, entries
+
+- Link: https://javascript.info/keys-values-entries
+- Explanation
+    - [Object.keys(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys) – returns an array of keys.
+    - [Object.values(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values) – returns an array of values.
+    - [Object.entries(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries) – returns an array of `[key, value]` pairs.
+- `Object.fromEntries(array)` can be used to convert an array with key-value pairs into an object
+    
+    ```jsx
+    let fruits = {
+        banana: 20,
+        apple: 5,
+        watermelon: 100
+    }
+    
+    // Doubling the fruits into a new object
+    const doubleFruitsObj = Object.fromEntries(
+        Object.entries(fruits).map(fr => [fr[0], fr[1] * 2])
+    )
+    
+    /**
+    	{
+    	    banana: 40,
+    	    apple: 10,
+    	    watermelon: 200
+    	}
+    */
+    ```
+---
+# Content Updates
+- 2023-07-29 - init
