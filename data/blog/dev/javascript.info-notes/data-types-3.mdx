@@ -65,7 +65,7 @@ summary: "We learn about the Date object, JSON, and its methods"
     new Date(year, month, date, hours, minutes, seconds, ms)
     ```
     
-- `new Date(milliseconds)` ****is gives you a `Date` object with time equal to the number of milliseconds which have passed after Jan 1, 1970 UTC+0
+- `new Date(milliseconds)` is gives you a `Date` object with time equal to the number of milliseconds which have passed after Jan 1, 1970 UTC+0
     - Dates before that have negative millis!
         
         ```jsx
@@ -86,7 +86,7 @@ summary: "We learn about the Date object, JSON, and its methods"
     | getTimezoneOffset()                                       | Get the difference between UTC and the local time zone, in minutes                                                                           |
     - All these have a getUTC* counterpart as well
     - All these also have a corresponding setter
-- The Date objects have an inbuilt autocorrection feature which is resistant to out-of-bound dates, negative days etc.
+- The Date objects have an inbuilt *autocorrection* feature which is resistant to out-of-bound dates, negative days etc.
     
     ```jsx
     let now = new Date()
@@ -103,7 +103,7 @@ summary: "We learn about the Date object, JSON, and its methods"
     // Feb28_2016 is Mar 1, 2016
     ```
     
-- Coercing a Date object to a number returns the number of milliseconds, same as `getTime()`. So subtracting two dates gives the difference in milliseconds.
+- Coercing a Date object to a number (<a href="/blog/dev/javascript.info-notes/objects-basics#object-to-primitive-conversion">Symbol.toPrimitive</a>) returns the number of milliseconds, same as `getTime()`. So subtracting two dates gives the difference in milliseconds.
     
     ```jsx
     const dateA = new Date(2023, 1, 1)
