@@ -104,10 +104,10 @@ summary: "Closures | Scope of a function | Recursion | Spread syntax (...)"
         console.log(Array.from(iterable)); // [1, 2, 3, 4]
         
         console.log([...iterable]) // [1, 2, 3, 4]
-        [...arrayLike] // Syntax Error!
+        [...arrayLike] // Uncaught TypeError: arrayLike is not iterable
         ```
         
-- We can use this to isolate a piece of code that does its own task, with variables that only belong to it.
+- We can use `{code blocks}` to isolate a piece of code that does its own task, with variables that only belong to it. 
     
     ```jsx
     {
