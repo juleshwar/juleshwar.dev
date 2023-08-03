@@ -1,0 +1,232 @@
+---
+title: Functions & Variables (Part I)
+date: '2023-08-03'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: "Closures and scope of a function | Recursion | Spread syntax (...)"
+---
+
+# Table Of Contents
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+
+---
+## Recursion & Stack
+
+- Link: https://javascript.info/recursion
+- The maximal number of nested calls in a recursion is called its *recursion depth.*
+- https://javascript.info/recursion#the-execution-context-and-stack
+    
+    The [execution context](https://tc39.github.io/ecma262/#sec-execution-contexts) is an internal data structure that contains details about the execution of a function: where the control flow is now, the current variables, the value of `this` and few other internal details.
+    
+    One function call has exactly one execution context associated with it.
+    
+    When a function makes a nested call, the following happens:
+    
+    - The current function is paused.
+    - The execution context associated with it is remembered in a special data structure called *execution context stack*.
+    - The nested call executes.
+    - After it ends, the old execution context is retrieved from the stack, and the outer function is resumed from where it stopped.
+
+## Rest Parameters & Spread Syntax
+
+- Link: https://javascript.info/rest-parameters-spread
+- The spread operator can be used in a function definition to *collect* all the incoming/rest of the arguments into an array. The dots literally mean “gather the remaining parameters into an array”.
+    
+    ```jsx
+    function sumAll(...args) { // args is the name for the array
+    	return args.reduce((acc, curr) => acc + curr, 0)
+    }
+    
+    alert( sumAll(1) ); // 1
+    alert( sumAll(1, 2) ); // 3
+    alert( sumAll(1, 2, 3) ); // 6
+    ```
+    
+- https://javascript.info/rest-parameters-spread#the-arguments-variable
+    
+    `arguments` is an **array-like** object in a traditional function which has all the arguments by their index. Although `arguments` is both array-like and iterable, it’s not an array.
+    
+    ```jsx
+    function logName(fName, lName) {
+    	for(let name of arguments) { **// Iterable**
+    		console.log(name) // "Daniel", "Naroditsky"
+    	}
+    
+    	**// Array-like**
+    	console.log(arguments[0]) // "Daniel"
+    	console.log(arguments[1]) // "Naroditsky"
+    
+    	// Not an array!
+    	**console.log(arguments.map) // undefined!**
+    
+    	console.log("Hi I'm ", arguments[0], " ", arguments[1])
+    }
+    
+    logName("Daniel", "Naroditsky")
+    ```
+    
+- https://javascript.info/rest-parameters-spread#the-arguments-variable
+    
+    Arrow functions don’t have the `arguments` array. If we try to access the array inside an arrow function, it takes the array from the closest traditional function parent
+    
+- Difference between `Array.from` and `…`
+    
+    `Array.from` converts both *iterables* and *array-likes* into an array. But `…` only converts iterables into arrays
+        
+        ```jsx
+        const arrayLike = {
+        	0: "A",
+        	1: "B",
+        	2: "C",
+          length: 3
+        }
+        
+        const iterable = {
+        	from: 1,
+        	to: 4,
+        
+        	[Symbol.iterator]: function() {
+        		return {
+        			current: this.from,
+        			last: this.to,
+        
+        			next() {
+        				if(this.current <= this.last) {
+        					return { value: this.current++, done: false}				
+        				}
+        				return { done: true }
+        			}
+        		}
+        	}
+        }
+        
+        console.log(Array.from(arrayLike)); // ["A", "B", "C"]
+        console.log(Array.from(iterable)); // [1, 2, 3, 4]
+        
+        console.log([...iterable]) // [1, 2, 3, 4]
+        [...arrayLike] // Syntax Error!
+        ```
+        
+- We can use this to isolate a piece of code that does its own task, with variables that only belong to it.
+    
+    ```jsx
+    {
+      // show message
+      let message = "Hello";
+      alert(message);
+    }
+    
+    {
+      // show another message
+      let message = "Goodbye";
+      alert(message);
+    }
+    ```
+    
+
+## Variable Scope & Closure
+
+- Link: https://javascript.info/closure
+- https://javascript.info/closure#lexical-environment
+    
+    Every running function, code block `{...}`, and the script as a whole have an internal (hidden) associated object known as the *Lexical Environment*. Theoretically, each function is supposed to have a `[[Environment]]` property which links it to its Lexical Environment
+    
+    The Lexical Environment object consists of two parts:
+    
+    1. *Environment Record* – an object that stores all local variables as its properties (and some other information like the value of `this`).
+    2. A reference to the *outer lexical environment*, the one associated with the outer code.
+    - **Variables**
+        
+        **A “variable” is just a property of the special internal object, `Environment Record`. “To get or change a variable” means “to get or change a property of that object”.**
+        
+        The outermost LE is the *global LE* whose outer LE is `null`
+        
+        <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/lexical-environment-variables.png" width={5000} height={500} alt="Lexical Environment for a variable in the global scope"/>
+        
+    
+    - **Function Declarations**
+        
+        A function is also a value, like a variable.
+        
+        **The difference is that a Function Declaration is instantly fully initialized.**
+        
+        When a Lexical Environment is created, a Function Declaration immediately becomes a ready-to-use function (unlike `let`, that is unusable till the declaration).
+        
+        That’s why we can use a function, declared as Function Declaration, even before the declaration itself. #til
+        
+        <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/function-declaration-lexical-environment.png" width={5000} height={500} alt="Functions are instantly fully initialised in the lexical environment"/>
+        
+    
+    - **Inner & Outer Lexical Environment**
+        
+        When a function runs, at the beginning of the call, a new Lexical Environment is created automatically to store local variables and parameters of the call. #til
+        
+        **When the code wants to access a variable – the inner Lexical Environment is searched first, then the outer one, then the more outer one and so on until the global one.** This is very similar to the how the prototype chain is followed to find a property.
+        
+        <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/function-inner-outer-lexical-environment.png" width={5000} height={500} alt="Inner and outer lexical environment for a function"/>
+        
+    - **Returning a function**
+        
+        
+        ```jsx
+        function makeCounter() {
+          let count = 0;
+        
+          return function() {
+            return count++;
+          };
+        }
+        
+        let counter = makeCounter();
+        let counter2 = makeCounter();
+        
+        console.log(counter()) // 0
+        console.log(counter()) // 1
+        console.log(counter()) // 2
+        
+        console.log(counter2()) // 0
+        ```
+        
+        At the beginning of each `makeCounter()` call, a **new Lexical Environment object** is created, to store variables for this `makeCounter` run.
+        
+        *What’s different from above use-case is that during the execution of `makeCounter()`, a tiny nested function is created of only one line: `return count++`. We don’t run it yet, only create.*
+        
+        So, `counter.[[Environment]]` has the reference to `{count: 0}` Lexical Environment. That’s how the function remembers where it was created, no matter where it’s called. The `[[Environment]]` reference is set once and forever at function creation time.
+        
+        Later, when `counter()` is called, a new Lexical Environment is created for the call, and its outer Lexical Environment reference is taken from `counter.[[Environment]]`
+        
+        Now when the code inside `counter()` looks for `count` variable, it first searches its own Lexical Environment (empty, as there are no local variables there), then the Lexical Environment of the outer `makeCounter()` call, where it finds and changes it.
+        
+        **A variable is updated in the Lexical Environment where it lives.**
+        
+        💡 the `count: 0` which is green highlighted becomes `count: 1` after execution of `counter()`
+
+        <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/lexical-environment-demarcation.png" width={5000} height={500} alt="Demarcations showing where the lexical environment for a function ends and the global lexical environment begins"/>
+        
+        ### Closure
+        
+        A [closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)) is a function that remembers its outer variables and can access them. In JS, all functions are naturally closures (there is only one exception, to be covered in [The "new Function" syntax](https://javascript.info/new-function)).
+        
+        ### Dead Zone
+        
+        ```jsx
+        let x = 1;
+        
+        function func() {
+          console.log(x); // ?
+        
+          let x = 2;
+        }
+        
+        func();
+        ```
+        
+        In this example we can observe the peculiar difference between a “non-existing” and `<uninitialized>` variable.
+        
+        As you may have read in the article [Variable scope, closure](https://javascript.info/closure), a variable starts in the `<uninitialized>` state from the moment when the execution enters a code block (or a function). And it stays uninitalized until the corresponding `let` statement.
+        
+        In other words, a variable technically exists, but can’t be used before `let`. This zone is called the **dead-zone**
+
+---
+# Content Updates
+- 2023-08-03 - init
