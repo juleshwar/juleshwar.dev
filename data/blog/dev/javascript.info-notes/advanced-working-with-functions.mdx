@@ -207,24 +207,45 @@ summary: "Closures | Scope of a function | Recursion | Spread syntax (...)"
         
         A [closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)) is a function that remembers its outer variables and can access them. In JS, all functions are naturally closures (there is only one exception, to be covered in [The "new Function" syntax](https://javascript.info/new-function)).
         
+        That is: they automatically remember where they were created using a hidden `[[Environment]]` property, and then their code can access outer variables.
+        
         ### Dead Zone
-        
+
         ```jsx
-        let x = 1;
-        
+        // Variable is present but uninitialized
         function func() {
-          console.log(x); // ?
-        
-          let x = 2;
+          console.log(someVal); // Uncaught ReferenceError: Cannot access 'someVal' before initialization
+          let someVal = 1;
         }
-        
+
         func();
         ```
-        
+
+        ```jsx
+        // Variable is present but uninitialized
+        let someVal = 1;
+
+        function func() {
+          // First it checks the current lexical environment before checking the outer one. The variable is present but uninitialized
+          console.log(someVal); // Uncaught ReferenceError: Cannot access 'someVal' before initialization
+          let someVal = 2;
+        }
+
+        func();
+        ```
+        ```jsx
+        // Variable does not exist
+        function func() {
+          console.log(nonExistingVal); // Uncaught ReferenceError: nonExistingVal is not defined
+        }
+
+        func();
+        ```
+
         In this example we can observe the peculiar difference between a “non-existing” and `<uninitialized>` variable.
-        
-        As you may have read in the article [Variable scope, closure](https://javascript.info/closure), a variable starts in the `<uninitialized>` state from the moment when the execution enters a code block (or a function). And it stays uninitalized until the corresponding `let` statement.
-        
+
+        A variable starts in the `<uninitialized>` state from the moment when the execution enters a code block (or a function). And it stays `<uninitialized>` until the corresponding `let` statement.
+
         In other words, a variable technically exists, but can’t be used before `let`. This zone is called the **dead-zone**
 
 ---
