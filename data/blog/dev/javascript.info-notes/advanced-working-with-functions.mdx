@@ -186,20 +186,23 @@ summary: "Closures | Scope of a function | Recursion | Spread syntax (...)"
         
         console.log(counter2()) // 0
         ```
-        
-        At the beginning of each `makeCounter()` call, a **new Lexical Environment object** is created, to store variables for this `makeCounter` run.
-        
-        *What’s different from above use-case is that during the execution of `makeCounter()`, a tiny nested function is created of only one line: `return count++`. We don’t run it yet, only create.*
-        
-        So, `counter.[[Environment]]` has the reference to `{count: 0}` Lexical Environment. That’s how the function remembers where it was created, no matter where it’s called. The `[[Environment]]` reference is set once and forever at function creation time.
-        
-        Later, when `counter()` is called, a new Lexical Environment is created for the call, and its outer Lexical Environment reference is taken from `counter.[[Environment]]`
-        
-        Now when the code inside `counter()` looks for `count` variable, it first searches its own Lexical Environment (empty, as there are no local variables there), then the Lexical Environment of the outer `makeCounter()` call, where it finds and changes it.
-        
+        Please refer to the image below while reading the content to get sufficient context as to what’s happening. Let me know in the comments if the content below needs further simplification/clarity.
+
+        At the beginning of each `makeCounter()` call, a **new Lexical Environment object** is created, to store variables for the `makeCounter` function call instance.
+
+        *The execution of `makeCounter()` returns a tiny anonymous function with only one line: `return count++`. We haven’t called it yet.*
+
+        So, `counter` which refers to the newly created anonymous function has an `[[Environment]]` key (`counter.[[Environment]]`) which points to `{count: 0}` lexical environment. **When a function is created, it also remembers where it was created**! No matter where you call this function, it will always have a reference to its lexical environment.  The `[[Environment]]` reference is set once and forever at function creation time.
+
+        Later, when `counter` is called i.e `counter()`, a new Lexical Environment is created for running the one-liner anonymous function. That Lexical Environment’s *outer* points to `counter.[[Environment]]`
+
+        Now when the code inside the anonymous function i.e `counter()` looks for `count` variable, it first searches its own Lexical Environment (empty, as there are no local variables there), then its *outer* Lexical Environment, where it finds `count` and thus modifies the value in that environment.
+
         **A variable is updated in the Lexical Environment where it lives.**
-        
-        💡 the `count: 0` which is green highlighted becomes `count: 1` after execution of `counter()`
+
+        <Aside icon="💡">
+        the `count: 0` which is green highlighted becomes `count: 1` after execution of `counter()`
+        </Aside>
 
         <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/lexical-environment-demarcation.png" width={5000} height={500} alt="Demarcations showing where the lexical environment for a function ends and the global lexical environment begins"/>
         
