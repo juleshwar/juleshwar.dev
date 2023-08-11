@@ -1,11 +1,28 @@
 import siteMetadata from '@/data/siteMetadata'
+import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+import resolveConfig from 'tailwindcss/resolveConfig'
+import tailwindConfig from /* preval */ '../tailwind.config.js'
 
 const ScrollTopAndComment = () => {
   const [show, setShow] = useState(false)
+  const [scrollYValue, setScrollYValue] = useState(0)
+  const [scrollableHeight, setScrollableHeight] = useState(100)
+  const scrollYPercentage = Math.round((scrollYValue / scrollableHeight) * 100)
+  const scrollYInDegrees = scrollYPercentage * 3.6 // Each percentage === 3.6 degrees movement
+  const { theme, resolvedTheme } = useTheme()
+  const isDarkTheme = theme === 'dark' || resolvedTheme === 'dark'
+  const { theme: tailwindTheme } = resolveConfig(tailwindConfig)
+
+  useEffect(() => {
+    // Deducting the visible viewport height
+    setScrollableHeight(document.body.scrollHeight - window.innerHeight)
+  }, [])
 
   useEffect(() => {
     const handleWindowScroll = () => {
+      const scrollY = window.scrollY
+      setScrollYValue(scrollY)
       if (window.scrollY > 50) setShow(true)
       else setShow(false)
     }
@@ -20,6 +37,17 @@ const ScrollTopAndComment = () => {
   const handleScrollToComment = () => {
     document.getElementById('comment').scrollIntoView()
   }
+
+  const conicColor = isDarkTheme
+    ? tailwindTheme.colors.primary['400']
+    : tailwindTheme.colors.primary['600']
+  const scrollTopButtonCssBackgroundRules = {
+    default: `conic-gradient(${conicColor} ${scrollYInDegrees}deg, transparent 0deg)`,
+    dank: `conic-gradient(red, orange, yellow, green, blue, red, transparent ${
+      scrollYInDegrees + 30
+    }deg)`,
+  }
+
   return (
     <div
       className={`fixed right-8 bottom-8 hidden flex-col gap-3 ${show ? 'md:flex' : 'md:hidden'}`}
@@ -28,7 +56,7 @@ const ScrollTopAndComment = () => {
         <button
           aria-label="Scroll To Comment"
           onClick={handleScrollToComment}
-          className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+          className="m-1 rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
         >
           <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path
@@ -39,19 +67,24 @@ const ScrollTopAndComment = () => {
           </svg>
         </button>
       )}
-      <button
-        aria-label="Scroll To Top"
-        onClick={handleScrollTop}
-        className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+      <div
+        style={{ background: scrollTopButtonCssBackgroundRules.default }}
+        className="rounded-full"
       >
-        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path
-            fillRule="evenodd"
-            d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
+        <button
+          aria-label="Scroll To Top"
+          onClick={handleScrollTop}
+          className="m-1 rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+        >
+          <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fillRule="evenodd"
+              d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
   )
 }
