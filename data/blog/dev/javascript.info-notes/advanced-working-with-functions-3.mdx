@@ -1,0 +1,221 @@
+---
+title: Functions & Variables (Part III)
+date: '2023-09-07'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: ""
+---
+
+# Table Of Contents
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+
+---
+
+## The "new Function" syntax
+
+- Link: https://javascript.info/new-function
+- Syntax: `let func = new Function ([arg1, arg2, ...argN], functionBody);`
+    
+    ```jsx
+    new Function('a', 'b', 'return a + b'); // basic syntax
+    new Function('a,b', 'return a + b'); // comma-separated (present due to historical reasons)
+    new Function('a , b', 'return a + b'); // comma-separated with spaces (present due to historical reasons)
+    ```
+    
+- `functionBody` is a string. These are useful when we need to create functions during runtime (getting function body from the server)
+- Functions created with `new Function`, have `[[Environment]]` referencing the **global Lexical Environment**, not the outer one. Hence, they cannot use outer variables. But that’s actually good, because it insures us from errors. Passing parameters explicitly is a much better method architecturally and causes no problems with minifiers.
+
+## Scheduling: setTimeout and setInterval
+
+- Link: https://javascript.info/settimeout-setinterval
+- Syntax:
+    
+    ```tsx
+    let setTimeoutId = setTimeout(func: Function |code: string, [delay]: number, ***[arg1]: any, [arg2]: any, ...***)
+    let setIntervalId = setInterval(func: Function |code: string, [delay]: number, ***[arg1]: any, [arg2]: any, ...***)
+    ```
+    
+- We can emulate the `setInterval` behaviour using nested `setTimeout`s. Frankly, that’s a more controllable way of running code regularly
+    
+    ```tsx
+    let timerId = setTimeout(function tick() {
+      alert('tick');
+      timerId = setTimeout(tick, 2000); // (*)
+    }, 2000);
+    ```
+    
+    Also the behaviour aligns more with what we expect 👇🏼
+    
+    **setInterval timeline**
+    
+    ```tsx
+    let i = 1;
+    setInterval(function() {
+      func(i++);
+    }, 100);
+    ```
+    
+    <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/setinterval-timeline.png" width={5000} height={500} alt="Demarcations showing where the lexical environment for a function ends and the global lexical environment begins"/>
+    
+    **setTimeout timeline**
+    
+    ```tsx
+    let i = 1;
+    setTimeout(function run() {
+      func(i++);
+      setTimeout(run, 100);
+    }, 100);
+    ```
+
+    <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/setinterval-using-settimeout-timeline.png" width={5000} height={500} alt="Demarcations showing where the lexical environment for a function ends and the global lexical environment begins"/>
+    
+    The nested `setTimeout` **guarantees** the fixed delay (here 100ms) in between running the business logic
+    
+
+## Decorators and Forwarding, call/apply
+
+- Link: https://javascript.info/call-apply-decorators
+- Decorators are functions which take a function and add additional functionality to it/alter its behaviour
+
+        ```tsx
+        function slow(x) {
+          // there can be a heavy CPU-intensive job here
+          alert(`Called with ${x}`);
+          return x;
+        }
+        
+        function cachingDecorator(func) {
+          let cache = new Map();
+        
+          return function(x) {
+            if (cache.has(x)) {    // if there's such key in cache
+              return cache.get(x); // read the result from it
+            }
+        
+            let result = func(x);  // otherwise call func
+        
+            cache.set(x, result);  // and cache (remember) the result
+            return result;
+          };
+        }
+        
+        slow = cachingDecorator(slow);
+        
+        alert( slow(1) ); // slow(1) is cached and the result returned
+        alert( "Again: " + slow(1) ); // slow(1) result returned from cache
+        
+        alert( slow(2) ); // slow(2) is cached and the result returned
+        alert( "Again: " + slow(2) ); // slow(2) result returned from cache
+        ```
+        
+- `call` and `apply` allow us to set the context when a function is run
+    
+    ```tsx
+    func.call(context, ...args);
+    func.apply(context, args);
+    ```
+    
+    There’s only a subtle difference regarding `args`:
+    
+    - The spread syntax `...` allows to pass *iterable* `args` as the list to `call`.
+    - The `apply` accepts only *array-like* `args`.
+- Passing all arguments along with the context to another function is called *call forwarding*
+    
+    ```tsx
+    let wrapper = function() {
+      return func.apply(this, arguments);
+    };
+    ```
+    
+- Method Borrowing is a way of *borrowing* a method from one object to use it on another object
+    
+    ```tsx
+    let arrayLikeObject = {
+    	0: "a",
+    	1: "b",
+    	2: "c",
+    	length: 3
+    }
+    
+    // Result required: a,b,c using Array.join method
+    
+    [].join.call(arrayLikeObject)
+    ```
+    
+
+## Function Binding
+
+- Link: https://javascript.info/bind
+
+```tsx
+let boundFunc = func.bind(context, ...args) // Any args provided during binding set fixed arguments for the function func
+```
+
+- An use-case
+    
+    
+    **No context bound**
+    
+    ```tsx
+    let user = {
+      firstName: "John",
+      sayHi() {
+        alert(`Hello, ${this.firstName}!`);
+      }
+    };
+    
+    setTimeout(user.sayHi, 1000); // Hello, undefined
+    
+    **/**
+    	which essentially means
+    	let sayHi = user.sayHi
+    	setTimeout(sayHi, 1000)
+    */**
+    ```
+    <figcaption>_this_ is lost</figcaption>
+    
+    **Context is present**
+    
+    This is one solution as the `user` is just accessed from the outer Lexical Environment. But this solution has a problem. If the `user` object changes before the `setTimeout` runs, the code can break
+    
+    ```tsx
+    let user = {
+      firstName: "John",
+      sayHi() {
+        alert(`Hello, ${this.firstName}!`);
+      }
+    };
+    
+    setTimeout(function() {
+      user.sayHi(); // Hello, John!
+    }, 1000);
+    ```
+    
+    - To prevent issues as [mentioned above](https://www.notion.so/JavaScript-a78c3c235d034f8c91364a37f676fce2?pvs=21), we can use bind which **fixes the context in time** to the function. So even if the `user` object is altered before the bound function runs, the bound function runs
+        
+        ```tsx
+        let user = {
+          firstName: "John",
+          sayHi() {
+            alert(`Hello, ${this.firstName}!`);
+          }
+        };
+        
+        setTimeout(user.sayHi.bind(user), 1000); // Hello, John
+        ```
+        
+
+## Arrow functions revisited
+
+- Link: https://javascript.info/arrow-functions
+- Arrow functions:
+    - Do not have `this`
+    - Do not have `arguments`
+    - Can’t be called with `new`
+    - They also don’t have `super`, but we didn’t study it yet. We will on the chapter [Class inheritance](https://javascript.info/class-inheritance)
+    
+    That’s because they are meant for short pieces of code that do not have their own “context”, but rather work in the current one. And they really shine in that use case.
+
+---
+# Content Updates
+- 2023-09-07 - init
