@@ -1,0 +1,66 @@
+---
+title: Object Properties
+date: '2023-09-08'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: "Property Flags | Accessor Properties"
+---
+
+# Table Of Contents
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+
+---
+
+Source Link: https://javascript.info/object-properties
+- There are **two kinds of object properties**.
+    - The first kind is *data properties*. All properties that we’ve been using until now were data properties.
+        ```js
+        let obj = {
+            foo: 10
+        }
+
+        obj.foo // 10 -> data property
+        ```
+    - The second type is *accessor property*. They are essentially functions that execute on getting and setting a value, but look like regular properties to an external code.
+
+## Property Flags and Descriptors
+
+- Link: https://javascript.info/property-descriptors
+- Object properties, besides a *****value*****, have three special properties so-called “flags”
+    - **`writable`** – if `true`, the value can be changed, otherwise it’s read-only.
+    - **`enumerable`** – if `true`, then listed in loops, otherwise not listed.
+    - **`configurable`** – if `true`, the property can be deleted and these attributes can be modified, otherwise not.
+- [Object.getOwnPropertyDescriptor(obj, propName)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor) allows us to see these flags which are generally hidden away. All these three flags are true for props we normally set.
+- Using `Object.defineProperty` we can edit these flags for properties. Any flag not mentioned while defining a property is considered `false` by default
+- Making a property non-configurable is a one-way road. We cannot change it back with `defineProperty`. The only other change we can make to such a property is make its `writable` flag from `true` to `false`
+- Other handy property configurators
+    - **[Object.preventExtensions(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/preventExtensions):** Forbids the addition of new properties to the object.
+    - **[Object.seal(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal):** Forbids adding/removing of properties. Sets `configurable: false` for all existing properties.
+    - **[Object.freeze(obj)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze):** Forbids adding/removing/changing of properties. Sets `configurable: false, writable: false` for all existing properties.
+
+## ****Property Getters and Setters****
+
+- Link: https://javascript.info/property-accessors
+
+    ```jsx
+    let obj = {
+        get propName() {
+            // getter, the code executed on getting obj.propName
+        },
+
+        set propName(value) {
+            // setter, the code executed on setting obj.propName = value
+        }
+    };
+    ```
+
+- Descriptors for accessor properties are different from those for data properties.
+    - **`get`** – a function without arguments, that works when a property is read,
+    - **`set`** – a function with one argument, that is called when the property is set,
+    - **`enumerable`** – same as for data properties… if false, property doesn’t show up in `for` loops
+    - **`configurable`** – same as for data properties... if `true`, the property can be deleted and these *descriptors* can be modified, otherwise not.
+- A property can either have a *value* descriptor or *get/set* descriptors. Not both at the same time.
+
+---
+# Content Updates
+- 2023-09-08 - init
