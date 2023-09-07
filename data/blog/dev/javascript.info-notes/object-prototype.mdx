@@ -1,0 +1,117 @@
+---
+title: Object Prototype
+date: '2023-09-09'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: "Prototype Inheritance | F.prototype | __proto__"
+---
+
+# Table Of Contents
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+
+---
+
+Source Link: https://javascript.info/prototypes
+
+## Prototypal inheritance
+
+- Link: https://javascript.info/prototype-inheritance
+- Prototypal inheritance is JS’ way of allowing an object to *extend* or *inherit behaviour* from another object.`[[Prototype]]` is a hidden internal object field which is used to enable this.
+- If a field doesn’t exist on an object, the JS engine follows the *prototype chain* to search for the field.
+
+    ```jsx
+    let animal = {
+    eats: true,
+    walk() {
+        alert("Animal walk");
+    }
+    };
+
+    let rabbit = {
+    jumps: true,
+    __proto__: animal
+    };
+
+    let longEar = {
+    earLength: 10,
+    __proto__: rabbit
+    };
+
+    // walk is taken from the prototype chain
+    longEar.walk(); // Animal walk
+    alert(longEar.jumps); // true (from rabbit)
+    ```
+
+    <Image src="/static/images/blog/javascript.info-notes/object-prototype/prototype-chain.png" width={300} height={500} alt="Image showing how setting the __proto__ property of objectA to objectB links objectB as a parent of objectA in the prototype chain"/>
+
+- There is another field `__proto__` which exists for historical reasons. It is a historical getter/setter for `[[Prototype]]`. Modern JS way of getting/setting prototype is by using `Object.getPrototypeOf(obj) / Object.setPrototypeOf(objA, objB)`
+- In a method call, the value of `this` is always decided by the *object behind the .(dot)…* even if a method is found in the prototype chain
+    
+    ```jsx
+    let animal = {
+    	run() {
+    		this.isRunning = true
+    	}
+    }
+    
+    let elephant = {
+    	__proto__: animal
+    }
+    
+    elephant.run();
+    elephant.isRunning // true
+    animal.isRunning // undefined
+    ```
+    
+
+## F.prototype
+
+- Link: https://javascript.info/function-prototype
+- We will be talking about the `prototype` object field here. We will be analysing the behaviour of literally setting the `prototype` property to a function.
+- Setting Animal.prototype = animal literally states, when a new object is created using `new Animal`, set its `[[Prototype]]` property to the `animal`.  The `"prototype"` property only has such a special effect when set on a constructor function, and invoked with `new`. On regular objects the `prototype` is nothing special.
+
+    ```jsx
+    let animal = {
+    eats: true
+    };
+
+    function Rabbit(name) {
+    this.name = name;
+    }
+
+    Rabbit.prototype = animal;
+
+    let rabbit = new Rabbit("White Rabbit"); //  rabbit.__proto__ == animal
+
+    alert( rabbit.eats ); // true
+    ```
+
+    <Image src="/static/images/blog/javascript.info-notes/object-prototype/prototype-property-relation.png" width={800} height={500} alt="Image shows when the prototype property of functionB is set to objectA, any new instance created using new functionB will have its [[prototype]] set to objectA"/>
+
+- Every function has a default prototype assigned to it
+    
+    ```jsx
+    function Test() {}
+    // Test.prototype = { constructor: Test }
+    Test.prototype.constructor === Test // true
+    
+    let testChild = new Test()
+    
+    testChild.prototype === Test.prototype
+    testChild.constructor === Test
+    ```
+    
+    <Image src="/static/images/blog/javascript.info-notes/object-prototype/prototype-constructor-instance-relation.png" width={800} height={500} alt="Image shows how prototype, constructor and [[prototype]] are related"/>
+    
+
+## Native prototypes [TODO]
+
+- Link: https://javascript.info/native-prototypes
+
+## Prototype methods, objects without __proto__ [TODO]
+
+- Link: https://javascript.info/prototype-methods
+
+---
+# Content Updates
+- 2023-09-09 - init
