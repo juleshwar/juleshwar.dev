@@ -1,0 +1,204 @@
+---
+title: Functions & Variables (Part II)
+date: '2023-09-06'
+tags: ["javascript", "javascript.info-series"]
+draft: false
+summary: "var | Global Object | Function Object"
+---
+
+# Table Of Contents
+
+<TOCInline toc={props.toc} exclude="Table Of Contents"/>
+
+---
+
+## The old "var"
+
+- Link: https://javascript.info/var
+- Variables, declared with `var`, are either **function-scoped** or **global-scoped**. They *pierce* through blocks **until they reach a function block**.
+
+```jsx
+if (true) {
+    var test = true;
+}
+
+window.alert(test); // true, the variable lives after if
+```
+
+<figcaption>The test variable here has become a global variable now</figcaption>
+
+```jsx
+if (true) {
+    let test = true;
+}
+
+window.alert(test); // ReferenceError, test is not defined
+```
+<figcaption>The _test_ variable here is only available within the if code block</figcaption>
+
+```jsx
+function sayHi() {
+    if (true) {
+      var phrase = "Hello";
+    }
+
+    alert(phrase); **// works, phrase is available here**
+}
+
+sayHi();
+alert(phrase); **// ReferenceError: phrase is not defined**
+```
+<figcaption>Function scoping</figcaption>
+
+- “var” can tolerate redeclarations
+- *hoisting* is where `var` variable declarations are raised to the top.
+
+```jsx
+function sayHi() {
+    phrase = "Hello"; // Assignment
+    if (false) {
+    var phrase; // Declaration -> Raised to the top before the code runs
+    }
+    alert(phrase); // This works!
+}
+sayHi();
+```
+
+- IIFE - Immediately Invoked Function Expressions `(function (){ …code })()`
+
+    This is a way to have scope variables within a block. This syntax basically tells the engine that the function has been created as an expression and can be called rightaway
+
+    ```jsx
+    // This DOES NOT work!!
+    function() { // <-- SyntaxError: Function statements require a function name
+        var message = "Hello";
+        alert(message); // Hello
+    }();
+
+    // These all work #til
+    (function() {
+        alert("Parentheses around the function");
+    })();
+
+    (function() {
+        alert("Parentheses around the whole thing");
+    }());
+
+    !function() {
+        alert("Bitwise NOT operator starts the expression");
+    }();
+
+    +function() {
+        alert("Unary plus starts the expression");
+    }();
+    ```
+
+## Global Object
+
+- Link: https://javascript.info/global-object
+- In a browser, global functions and variables declared with `var` (not `let/const`!) become the property of the global object. Function declarations have the same effect (statements with `function` keyword in the main code flow, not function expressions).
+
+    ```jsx
+    var gVar = 5;
+    function moo() {
+        alert("moo")
+    }
+
+    alert(window.gVar); // 5 (became a property of the global object)
+    alert(window.moo); // function moo
+    ```
+
+    **This merely exists as a compatibility feature. It is not a spec.**
+
+- `globalThis` what is recently added to the spec. Its value gets set based on the environment.`window` when the script is running in browser or `global` when run with NodeJS.
+
+## Function object, NFE
+
+- Link: https://javascript.info/function-object
+- Functions are objects in JS. Functions can be considered as *callable “action objects”*. We can not only call them, but also treat them as objects: add/remove properties, pass by reference etc.
+- Functions have:
+
+  1. “name” property
+
+      ```jsx
+      function test() {}
+      console.log(test.name) // "test"
+      ```
+
+  2. “length” property: signifies the number of arguments for a func
+
+      ```jsx
+      function f1(a) {}
+      function f2(a, b) {}
+      function many(a, b, ...more) {}
+      
+      alert(f1.length); // 1
+      alert(f2.length); // 2
+      alert(many.length); // 2
+      ```
+
+      This property is usually used to support polymorphism in functions. (Polymorphism e.g Having one *add* function which can add two numbers and concatenate two strings, based on the arguments)
+
+- We can also assign properties to functions. These properties are stored in the function directly, not in its outer Lexical Environment. #til
+
+    ```jsx
+    function makeCounter() {
+        // instead of:
+        // let count = 0
+        function counter() {
+        return counter.count++;
+        };
+        counter.count = 0; // 😧
+        return counter;
+    }
+
+    let counter = makeCounter();
+    alert( counter() ); // 0
+    alert( counter() ); // 1
+
+    counter.count = 10 **// NOTE: The variable is accessible from outside. So entirely different from a local function variable**
+    ```
+
+- Named Function Expression
+
+    ```jsx
+    let sayHi = function **func**() {}
+    ```
+
+    This is useful when we want to self-reference the function. The function `func` is not available outside the function sayHi
+
+    ```jsx
+    let sayHi = function func(who) {
+        if (who) {
+        alert(`Hello, ${who}`);
+        } else {
+        func("Guest"); // use func to re-call itself
+        }
+    };
+
+    sayHi() // Hello, Guest
+    ```
+
+    ```jsx
+    let sayHi = function func(who) {
+        if (who) {
+        alert(`Hello, ${who}`);
+        } else {
+        sayHi("Guest"); // use func to re-call itself
+        }
+    };
+
+    sayHi() // Hello, Guest
+
+    let welcome = sayHi
+    sayHi = null
+
+    welcome() // Error: sayHi is not a function
+    ```
+    <figcaption>Using `sayHi` instead of `func` fails in certain situations</figcaption>
+
+---
+
+# Content Updates
+
+- 2023-09-06 - init
