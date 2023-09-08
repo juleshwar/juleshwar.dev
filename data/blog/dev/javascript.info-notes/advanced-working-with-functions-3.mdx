@@ -55,7 +55,7 @@ summary: "new Function() | call, apply & bind | Arrow Functions"
     }, 100);
     ```
     
-    <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/setinterval-timeline.png" width={5000} height={500} alt="Demarcations showing where the lexical environment for a function ends and the global lexical environment begins"/>
+    <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/setinterval-timeline.png" width={5000} height={500} alt="Timeline showing that calling a function with setInterval doesn't leave a gap of exact X seconds between function calls (Some time is consumed in running the function)"/>
     
     **setTimeout timeline**
     
@@ -67,7 +67,7 @@ summary: "new Function() | call, apply & bind | Arrow Functions"
     }, 100);
     ```
 
-    <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/setinterval-using-settimeout-timeline.png" width={5000} height={500} alt="Demarcations showing where the lexical environment for a function ends and the global lexical environment begins"/>
+    <Image src="/static/images/blog/javascript.info-notes/advanced-working-with-functions/setinterval-using-settimeout-timeline.png" width={5000} height={500} alt="Timeline showing that calling a function with setTimeout mimicing setInterval ensures exact X seconds between function calls"/>
     
     The nested `setTimeout` **guarantees** the fixed delay (here 100ms) in between running the business logic
     
