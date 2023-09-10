@@ -19,22 +19,22 @@ Source Link: https://javascript.info/prototypes
 - Prototypal inheritance is JS’ way of allowing an object to *extend* or *inherit behaviour* from another object.`[[Prototype]]` is a hidden internal object field which is used to enable this.
 - If a field doesn’t exist on an object, the JS engine follows the *prototype chain* to search for the field.
 
-    ```jsx
+    ```js
     let animal = {
-    eats: true,
-    walk() {
-        alert("Animal walk");
-    }
+        eats: true,
+        walk() {
+            alert("Animal walk");
+        }
     };
 
     let rabbit = {
-    jumps: true,
-    __proto__: animal
+        jumps: true,
+        __proto__: animal
     };
 
     let longEar = {
-    earLength: 10,
-    __proto__: rabbit
+        earLength: 10,
+        __proto__: rabbit
     };
 
     // walk is taken from the prototype chain
@@ -70,13 +70,13 @@ Source Link: https://javascript.info/prototypes
 - We will be talking about the `prototype` object field here. We will be analysing the behaviour of literally setting the `prototype` property to a function.
 - Setting Animal.prototype = animal literally states, when a new object is created using `new Animal`, set its `[[Prototype]]` property to the `animal`.  The `"prototype"` property only has such a special effect when set on a constructor function, and invoked with `new`. On regular objects the `prototype` is nothing special.
 
-    ```jsx
+    ```js
     let animal = {
-    eats: true
+      eats: true
     };
 
     function Rabbit(name) {
-    this.name = name;
+      this.name = name;
     }
 
     Rabbit.prototype = animal;
@@ -90,7 +90,7 @@ Source Link: https://javascript.info/prototypes
 
 - Every function has a default prototype assigned to it
     
-    ```jsx
+    ```js
     function Test() {}
     // Test.prototype = { constructor: Test }
     Test.prototype.constructor === Test // true
@@ -113,5 +113,6 @@ Source Link: https://javascript.info/prototypes
 - Link: https://javascript.info/prototype-methods
 
 ---
+
 # Content Updates
 - 2023-09-09 - init
