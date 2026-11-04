@@ -5,8 +5,11 @@ import { sortedBlogPost, coreContent } from 'pliny/utils/contentlayer'
 import { InferGetStaticPropsType } from 'next'
 import { allBlogs, allAuthors } from 'contentlayer/generated'
 import type { Blog } from 'contentlayer/generated'
+import PostLayout from '@/layouts/PostLayout'
+import PostSimple from '@/layouts/PostSimple'
 
 const DEFAULT_LAYOUT = 'PostLayout'
+const layouts = { PostLayout, PostSimple }
 
 export async function getStaticPaths() {
   return {
@@ -46,6 +49,7 @@ export default function BlogPostPage({
   prev,
   next,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const Layout = layouts[post.layout || DEFAULT_LAYOUT]
   return (
     <>
       {'draft' in post && post.draft === true ? (
@@ -58,15 +62,9 @@ export default function BlogPostPage({
           </PageTitle>
         </div>
       ) : (
-        <MDXLayoutRenderer
-          layout={post.layout || DEFAULT_LAYOUT}
-          content={post}
-          MDXComponents={MDXComponents}
-          toc={post.toc}
-          authorDetails={authorDetails}
-          prev={prev}
-          next={next}
-        />
+        <Layout content={coreContent(post)} authorDetails={authorDetails} prev={prev} next={next}>
+          <MDXLayoutRenderer code={post.body.code} components={MDXComponents} toc={post.toc} />
+        </Layout>
       )}
     </>
   )
