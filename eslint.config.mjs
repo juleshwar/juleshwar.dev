@@ -29,6 +29,8 @@ export default [
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-var-requires': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
+      // New in eslint-plugin-react-hooks 6; flags the existing mounted-check pattern in ThemeSwitch/ScrollTopAndComment.
+      'react-hooks/set-state-in-effect': 'warn',
     },
   },
 ]
