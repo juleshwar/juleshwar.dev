@@ -5,12 +5,17 @@ import { sortedBlogPost, coreContent } from 'pliny/utils/contentlayer'
 import { InferGetStaticPropsType } from 'next'
 import { allBlogs, allAuthors } from 'contentlayer/generated'
 import type { Blog } from 'contentlayer/generated'
+import PostLayout from '@/layouts/PostLayout'
+import PostSimple from '@/layouts/PostSimple'
 
 const DEFAULT_LAYOUT = 'PostLayout'
+const layouts = { PostLayout, PostSimple }
 
 export async function getStaticPaths() {
   return {
-    paths: allBlogs.map((p) => ({ params: { slug: p.slug.split('/') } })),
+    paths: allBlogs
+      .filter((p) => process.env.NODE_ENV !== 'production' || !p.draft)
+      .map((p) => ({ params: { slug: p.slug.split('/') } })),
     fallback: false,
   }
 }
@@ -24,6 +29,9 @@ export const getStaticProps = async ({ params }) => {
   const nextContent = sortedPosts[postIndex - 1] || null
   const next = nextContent ? coreContent(nextContent) : null
   const post = sortedPosts.find((p) => p.slug === slug)
+  if (!post || (process.env.NODE_ENV === 'production' && post.draft)) {
+    return { notFound: true }
+  }
   const authorList = post.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
@@ -46,6 +54,7 @@ export default function BlogPostPage({
   prev,
   next,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const Layout = layouts[post.layout || DEFAULT_LAYOUT]
   return (
     <>
       {'draft' in post && post.draft === true ? (
@@ -58,15 +67,9 @@ export default function BlogPostPage({
           </PageTitle>
         </div>
       ) : (
-        <MDXLayoutRenderer
-          layout={post.layout || DEFAULT_LAYOUT}
-          content={post}
-          MDXComponents={MDXComponents}
-          toc={post.toc}
-          authorDetails={authorDetails}
-          prev={prev}
-          next={next}
-        />
+        <Layout content={coreContent(post)} authorDetails={authorDetails} prev={prev} next={next}>
+          <MDXLayoutRenderer code={post.body.code} components={MDXComponents} toc={post.toc} />
+        </Layout>
       )}
     </>
   )

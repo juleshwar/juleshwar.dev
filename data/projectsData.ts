@@ -8,9 +8,10 @@ const projectsData = [
   {
     title: 'Pixelo',
     description: `A feel-good drawing app built using React, Tailwind CSS and Airtable.
-    Designed and prototyped on Figma. Game deployed at pixelo.surge.sh`,
+    Designed and prototyped on Figma. Play it at pixelo.juleshwar.dev`,
     imgSrc: '/static/images/projects/pixelo.png',
-    href: 'https://pixelo.surge.sh',
+    href: 'https://pixelo.juleshwar.dev',
+    repoHref: 'https://github.com/juleshwar/pixelo',
   },
 ]
 

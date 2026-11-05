@@ -1,6 +1,13 @@
-import { defineDocumentType, ComputedFields, makeSource } from 'contentlayer/source-files'
+import {
+  defineDocumentType,
+  ComputedFields,
+  makeSource,
+  contentDirExcludeDefault,
+} from 'contentlayer2/source-files'
 import readingTime from 'reading-time'
 import path from 'path'
+import { readdirSync, readFileSync } from 'fs'
+import matter from 'gray-matter'
 // Remark packages
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
@@ -9,7 +16,7 @@ import {
   remarkCodeTitles,
   remarkImgToJsx,
   extractTocHeadings,
-} from 'pliny/mdx-plugins.js'
+} from 'pliny/mdx-plugins/index.js'
 // Rehype packages
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
@@ -19,6 +26,18 @@ import rehypePrismPlus from 'rehype-prism-plus'
 import rehypePresetMinify from 'rehype-preset-minify'
 
 const root = process.cwd()
+const blogDir = path.join(root, 'data', 'blog')
+const blogFiles = (dir: string): string[] =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const file = path.join(dir, entry.name)
+    return entry.isDirectory() ? blogFiles(file) : entry.name.endsWith('.mdx') ? [file] : []
+  })
+const draftPaths =
+  process.env.NODE_ENV === 'production'
+    ? blogFiles(blogDir)
+        .filter((file) => matter(readFileSync(file, 'utf8')).data.draft === true)
+        .map((file) => path.relative(path.join(root, 'data'), file))
+    : []
 
 const computedFields: ComputedFields = {
   readingTime: {
@@ -37,7 +56,7 @@ const computedFields: ComputedFields = {
     type: 'string',
     resolve: (doc) => doc._raw.sourceFilePath,
   },
-  toc: { type: 'string', resolve: (doc) => extractTocHeadings(doc.body.raw) },
+  toc: { type: 'json', resolve: (doc) => extractTocHeadings(doc.body.raw) },
 }
 
 export const Blog = defineDocumentType(() => ({
@@ -81,6 +100,7 @@ export const Authors = defineDocumentType(() => ({
 
 export default makeSource({
   contentDirPath: 'data',
+  contentDirExclude: [...contentDirExcludeDefault, ...draftPaths],
   documentTypes: [Blog, Authors],
   mdx: {
     cwd: process.cwd(),
