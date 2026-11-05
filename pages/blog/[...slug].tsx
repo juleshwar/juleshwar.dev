@@ -13,7 +13,9 @@ const layouts = { PostLayout, PostSimple }
 
 export async function getStaticPaths() {
   return {
-    paths: allBlogs.map((p) => ({ params: { slug: p.slug.split('/') } })),
+    paths: allBlogs
+      .filter((p) => process.env.NODE_ENV !== 'production' || !p.draft)
+      .map((p) => ({ params: { slug: p.slug.split('/') } })),
     fallback: false,
   }
 }
@@ -27,6 +29,9 @@ export const getStaticProps = async ({ params }) => {
   const nextContent = sortedPosts[postIndex - 1] || null
   const next = nextContent ? coreContent(nextContent) : null
   const post = sortedPosts.find((p) => p.slug === slug)
+  if (!post || (process.env.NODE_ENV === 'production' && post.draft)) {
+    return { notFound: true }
+  }
   const authorList = post.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
